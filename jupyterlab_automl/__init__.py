@@ -5,10 +5,10 @@ from jupyterlab_automl.version import VERSION
 
 __version__ = VERSION
 
+
 def _jupyter_server_extension_paths():
-    return [{
-        'module': 'jupyterlab_automl'
-    }]
+    return [{"module": "jupyterlab_automl"}]
+
 
 def load_jupyter_server_extension(nb_server_app):
     """
@@ -16,13 +16,14 @@ def load_jupyter_server_extension(nb_server_app):
     Args:
         nb_server_app (NotebookWebApplication): handle to the Notebook webserver instance.
     """
-    host_pattern = '.*$'
+    host_pattern = ".*$"
     app = nb_server_app.web_app
-    gcp_v1_endpoint = url_path_join(
-      app.settings['base_url'], 'automl', 'v1')
-    app.add_handlers(host_pattern, [
-      # TODO(cbwilkes): Add auth checking if needed.
-      # (url_path_join(gcp_v1_endpoint, auth'), AuthHandler)
-      (url_path_join(gcp_v1_endpoint, 'list') + '(.*)', ListHandler),
-    ])
-
+    gcp_v1_endpoint = url_path_join(app.settings["base_url"], "automl", "v1")
+    app.add_handlers(
+        host_pattern,
+        [
+            # TODO(cbwilkes): Add auth checking if needed.
+            # (url_path_join(gcp_v1_endpoint, auth'), AuthHandler)
+            (url_path_join(gcp_v1_endpoint, "list") + "(.*)", ListHandler),
+        ],
+    )

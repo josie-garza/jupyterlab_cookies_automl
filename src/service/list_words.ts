@@ -1,42 +1,32 @@
-import {ServerConnection} from '@jupyterlab/services';
-import {URLExt} from "@jupyterlab/coreutils";
+import { requestAPI } from "./api_request"
 
 export interface Word {
   id: number;
-  word: string;
+  name: string;
 }
 
 export interface Words {
   words: Word[];
 }
 
+
+export interface DatasetListItem {
+  // TODO
+}
+
+export interface DatasetList {
+  // TODO
+}
+
 export class ListWordsService {
 
-  listWords(num_items: number): Promise<Words> {
-    return new Promise((resolve, reject) => {
-      let serverSettings = ServerConnection.makeSettings();
-      const requestUrl = URLExt.join(
-        serverSettings.baseUrl, 'automl/v1/list');
-      console.log("request URL " + requestUrl);
-      ServerConnection.makeRequest(requestUrl, {}, serverSettings
-      ).then((response) => {
-        response.json().then((content) => {
-          console.log(content)
-          if (content.error) {
-            console.error(content.error);
-            reject(content.error);
-            return [];
-          }
-          resolve({
-            words: content.words.map((w: any) => {
-              return {
-                id: w.id,
-                word: w.name,
-              }
-            })
-          });
-        });
-      });
-    });
-  }
+  async listWords(num_items: number): Promise<Words> {
+    try {
+      let data = await requestAPI<Words>('v1/list');
+      console.log(data);
+      return data;
+    } catch (err) {
+      throw err;
+    }
+  };
 }

@@ -77,7 +77,7 @@ export class ListWordItem extends React.Component<Props, {}> {
         <div className={localStyles.icon}>{this.getIconForWord(word)}</div>
         <div className={localStyles.details}>
           <a className="{css.link}" href="#">
-            {word.word}
+            {word.name}
           </a>
           <span className={localStyles.wordTime}>
             {endTime.toLocaleString()}
@@ -99,9 +99,9 @@ export class ListWordItem extends React.Component<Props, {}> {
   private getIconForWord(word: Word): JSX.Element {
     const regex_green = /^[A-K]/g;
     const regex_red = /^[S-Z]/g;
-    if (word.word.match(regex_green)) {
+    if (word.name.match(regex_green)) {
       return <GreenCheck />;
-    } else if (word.word.match(regex_red)) {
+    } else if (word.name.match(regex_red)) {
       return <RedClose />;
     }
     return <GrayPending />;
