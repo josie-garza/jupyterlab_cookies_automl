@@ -13,7 +13,7 @@ from os.path import join as pjoin
 
 here = os.path.dirname(os.path.abspath(__file__))
 is_repo = os.path.exists(pjoin(here, '.git'))
-tar_path = pjoin(here, 'jupyterlab_cookies*.tgz')
+tar_path = pjoin(here, 'jupyterlab_automl*.tgz')
 package_json = os.path.join(here, 'package.json')
 requirements = os.path.join(here, 'requirements.txt')
 npm_path = os.pathsep.join([
@@ -72,7 +72,7 @@ def get_data_files():
             os.path.relpath(f, '.') for f in glob.glob(tar_path)
         ]),
         ('etc/jupyter/jupyter_notebook_config.d', [
-          'jupyter-config/jupyter_notebook_config.d/jupyterlab_cookies.json'
+          'jupyter-config/jupyter_notebook_config.d/jupyterlab_automl.json'
         ])
     ]
 
@@ -117,7 +117,7 @@ class NPM(Command):
             os.utime(self.node_modules, None)
 
         if self.should_run_npm_pack():
-            log.info("Packing jupyterlab_cookies into archive")
+            log.info("Packing jupyterlab_automl into archive")
             check_call(['npm', 'pack'], cwd=here, stdout=sys.stdout, stderr=sys.stderr)
 
         files = glob.glob(tar_path)
@@ -147,7 +147,7 @@ with open(requirements) as f:
       requires.append(l.strip())
 
 setup_args = {
-    'name': 'jupyterlab_cookies',
+    'name': 'jupyterlab_automl',
     'version': version,
     'description': 'Cookie Cutter Project',
     'long_description': LONG_DESCRIPTION,

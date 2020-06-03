@@ -17,8 +17,8 @@ steps:
     args:
       [
         'cp',
-        'dist/jupyterlab_cookies*.tar.gz',
-        'gs://deeplearning-platform-ui-public/jupyterlab_cookies-$_VERSION.tar.gz',
+        'dist/jupyterlab_automl*.tar.gz',
+        'gs://deeplearning-platform-ui-public/jupyterlab_automl-$_VERSION.tar.gz',
       ]
     waitFor: ['package']
   - name: 'gcr.io/cloud-builders/gsutil'
@@ -26,8 +26,8 @@ steps:
     args:
       [
         'cp',
-        'dist/jupyterlab_cookies*.tar.gz',
-        'gs://deeplearning-platform-ui-public/jupyterlab_cookies-latest.tar.gz',
+        'dist/jupyterlab_automl*.tar.gz',
+        'gs://deeplearning-platform-ui-public/jupyterlab_automl-latest.tar.gz',
       ]
     waitFor: ['package']
 tags: ['release']

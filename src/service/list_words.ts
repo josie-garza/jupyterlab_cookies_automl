@@ -16,7 +16,7 @@ export class ListWordsService {
     return new Promise((resolve, reject) => {
       let serverSettings = ServerConnection.makeSettings();
       const requestUrl = URLExt.join(
-        serverSettings.baseUrl, 'cookies/v1/list');
+        serverSettings.baseUrl, 'automl/v1/list');
       console.log("request URL " + requestUrl);
       ServerConnection.makeRequest(requestUrl, {}, serverSettings
       ).then((response) => {

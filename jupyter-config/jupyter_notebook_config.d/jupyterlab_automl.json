@@ -1,7 +1,7 @@
 {
   "NotebookApp": {
     "nbserver_extensions": {
-      "jupyterlab_cookies": true
+      "jupyterlab_automl": true
     }
   }
 }

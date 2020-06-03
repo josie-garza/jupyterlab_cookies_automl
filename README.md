@@ -1,4 +1,4 @@
-# Notebook Cookies Extension
+# Notebook AutoML Extension
 
 JupyterLab extension project
 
@@ -27,11 +27,11 @@ install on a DLVM over SSH using the instance name. Requires gcloud from the Goo
 # Build the Python source distribution package
 local$ python setup.py sdist
 
-# Copy the dist/jupyterlab_cookies-x.x.x.tar.gz archive to the JupyterLab
+# Copy the dist/jupyterlab_automl-x.x.x.tar.gz archive to the JupyterLab
 # server
 
 # Install the Python package
-server$ sudo pip3 install jupyterlab_cookies-x.x.x.tar.gz
+server$ sudo pip3 install jupyterlab_automl-x.x.x.tar.gz
 # Force Jupyter to rebuild the front-end packages
 server$ sudo jupyter lab build
 server$ sudo service jupyter restart

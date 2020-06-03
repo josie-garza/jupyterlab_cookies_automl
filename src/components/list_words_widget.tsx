@@ -73,7 +73,7 @@ export class ListWordsPanel extends React.Component<Props, State> {
     const { isLoading, words } = this.state;
     return (
       <div className={localStyles.panel}>
-        <header className={localStyles.header}>Cookies Project</header>
+        <header className={localStyles.header}>AutoML Project</header>
         {isLoading ? (
           <LinearProgress />
         ) : (
@@ -107,8 +107,8 @@ export class ListWordsWidget extends ReactWidget {
 
   constructor(private readonly listWordsService: ListWordsService) {
     super();
-    this.title.iconClass = 'jp-Icon jp-Icon-20 jp-CookiesIcon';
-    this.title.caption = 'Cookies Project';
+    this.title.iconClass = 'jp-Icon jp-Icon-20 jp-AutoMLIcon';
+    this.title.caption = 'AutoML Project';
   }
 
   onAfterHide() {

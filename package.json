@@ -1,5 +1,5 @@
 {
-  "name": "jupyterlab_cookies",
+  "name": "jupyterlab_automl",
   "version": "0.0.1",
   "description": "Cookie Cutter Project",
   "keywords": [
@@ -7,9 +7,9 @@
     "jupyterlab",
     "jupyterlab-extension"
   ],
-  "homepage": "https://github.com/gclouduniverse/jupyterlab_cookies",
+  "homepage": "https://github.com/gclouduniverse/jupyterlab_automl",
   "bugs": {
-    "url": "https://github.com/gclouduniverse/jupyterlab_cookies/issues"
+    "url": "https://github.com/gclouduniverse/jupyterlab_automl/issues"
   },
   "license": "MIT",
   "author": "GCP AI Platform UI Team",
@@ -23,7 +23,7 @@
   "types": "lib/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/gclouduniverse/jupyterlab_cookies.git"
+    "url": "https://github.com/gclouduniverse/jupyterlab_automl.git"
   },
   "scripts": {
     "build": "tsc -p tsconfig.prod.json --allowJs --checkJs",
@@ -32,9 +32,9 @@
     "lint-warnings": "eslint \"src/**/*.{ts,tsx}\" --fix --quiet",
     "lint": "npm run lint-warnings -- --quiet",
     "start": "concurrently -k -p \"[{name}]\" -n \"Typescript,JupyterLab\" -c \"green.bold,yellow.bold\" \"npm run watch\" \"jupyter lab --ip=0.0.0.0 --watch\"",
-    "devserver": "nodemon -w jupyterlab_cookies -e \".py\" -x \"jupyter lab --ip=0.0.0.0 --no-browser\"",
+    "devserver": "nodemon -w jupyterlab_automl -e \".py\" -x \"jupyter lab --ip=0.0.0.0 --no-browser\"",
     "cloud_shell_devfrontend": "concurrently -k -p \"[{name}]\" -n \"Typescript,JupyterLab\" -c \"green.bold,yellow.bold\" \"npm run watch\" \"jupyter lab --ip=0.0.0.0 --port=8888 --LabApp.token='' --NotebookApp.custom_display_url='# Click to access: http://127.0.0.1:8888 #' --watch\"",
-    "cloud_shell_devbackend": "nodemon -w jupyterlab_gcsfilebrowser -e \".py\" -x \"jupyter lab --ip=0.0.0.0 --port=8888 --LabApp.token='' --NotebookApp.custom_display_url='# Click to access: http://127.0.0.1:8888 #' --no-browser\"",
+    "cloud_shell_devbackend": "nodemon -w jupyterlab_automl -e \".py\" -x \"jupyter lab --ip=0.0.0.0 --port=8888 --LabApp.token='' --NotebookApp.custom_display_url='# Click to access: http://127.0.0.1:8888 #' --no-browser\"",
     "test": "jest --coverage --passWithNoTests && python tests.py",
     "test-watch": "jest --watch",
     "watch": "tsc -w"
@@ -104,7 +104,7 @@
     "discovery": {
       "server": {
         "base": {
-          "name": "jupyterlab_cookies",
+          "name": "jupyterlab_automl",
           "managers": [
             "pip"
           ]

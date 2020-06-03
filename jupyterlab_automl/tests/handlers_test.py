@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock, MagicMock, patch
 
-from jupyterlab_cookies import handlers
+from jupyterlab_automl import handlers
 
 
 class TestList(unittest.TestCase):

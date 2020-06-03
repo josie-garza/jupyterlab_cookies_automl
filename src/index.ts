@@ -15,7 +15,7 @@ async function activate(
 ) {
   const listWordsService = new ListWordsService();
   const listWidget = new ListWordsWidget(listWordsService);
-  listWidget.addClass('jp-CookiesIcon');
+  listWidget.addClass('jp-AutoMLIcon');
   app.shell.add(listWidget, 'left', {rank: 100});
 }
 
@@ -24,7 +24,7 @@ async function activate(
  * The JupyterLab plugin.
  */
 const ListWordsPlugin: JupyterFrontEndPlugin<void> = {
-  id: 'cookies:cookies',
+  id: 'automl:automl',
   requires: [],
   activate: activate,
   autoStart: true

@@ -16,7 +16,7 @@ import google.auth
 from google.auth.exceptions import GoogleAuthError
 from google.auth.transport.requests import Request
 
-from jupyterlab_cookies.version import VERSION
+from jupyterlab_automl.version import VERSION
 
 SCOPE = ('https://www.googleapis.com/auth/cloud-platform',)
 
