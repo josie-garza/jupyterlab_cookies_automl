@@ -7,6 +7,7 @@ import re
 import tornado.gen as gen
 import os
 import random
+import logging
 
 from collections import namedtuple
 from notebook.base.handlers import APIHandler, app_log
@@ -57,12 +58,19 @@ class AuthProvider:
 
 def get_datasets(parent, client):
     datasets = client.list_datasets(parent)
-    words = []
-    i = 0
+    response = []
     for dataset in datasets:
-        words.append({"id": i, "name": dataset.display_name})
-        i += 1
-    return {"words": words}
+        response.append(
+            {
+                "id": dataset.name,
+                "displayName": dataset.display_name,
+                "description": dataset.description,
+                "createTime": dataset.create_time.ToMilliseconds(),
+                "exampleCount": dataset.example_count,
+                "metadata": "",
+            }
+        )
+    return {"datasets": response}
 
 
 class ListHandler(APIHandler):
@@ -78,4 +86,3 @@ class ListHandler(APIHandler):
             app_log.exception(str(e))
             self.set_status(500, str(e))
             self.finish({"error": {"message": str(e)}})
-

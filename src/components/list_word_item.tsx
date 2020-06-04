@@ -4,11 +4,11 @@ import * as csstips from 'csstips';
 import * as React from 'react';
 import { stylesheet } from 'typestyle';
 
-import { Word } from '../service/list_words';
+import { Dataset } from '../service/list_datasets';
 //import { COLORS, css } from '../styles';
 
 interface Props {
-  word: Word;
+  dataset: Dataset;
 }
 
 const localStyles = stylesheet({
@@ -69,18 +69,17 @@ const GrayPending = withStyles({
 
 export class ListWordItem extends React.Component<Props, {}> {
   render() {
-    const { word } = this.props;
-    const endTime = new Date();
-
+    const { dataset } = this.props;
+    const create_time = new Date(dataset.createTime);
     return (
       <li className={localStyles.item}>
-        <div className={localStyles.icon}>{this.getIconForWord(word)}</div>
+        <div className={localStyles.icon}>{this.getIconForWord(dataset)}</div>
         <div className={localStyles.details}>
           <a className="{css.link}" href="#">
-            {word.name}
+            {dataset.displayName}
           </a>
           <span className={localStyles.wordTime}>
-            {endTime.toLocaleString()}
+            {create_time.toLocaleString()}
           </span>
         </div>
         <div>
@@ -96,12 +95,12 @@ export class ListWordItem extends React.Component<Props, {}> {
     );
   }
 
-  private getIconForWord(word: Word): JSX.Element {
+  private getIconForWord(word: Dataset): JSX.Element {
     const regex_green = /^[A-K]/g;
     const regex_red = /^[S-Z]/g;
-    if (word.name.match(regex_green)) {
+    if (word.displayName.match(regex_green)) {
       return <GreenCheck />;
-    } else if (word.name.match(regex_red)) {
+    } else if (word.displayName.match(regex_red)) {
       return <RedClose />;
     }
     return <GrayPending />;

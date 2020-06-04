@@ -5,18 +5,18 @@ import * as csstips from 'csstips';
 import * as React from 'react';
 import { stylesheet } from 'typestyle';
 
-import { ListWordsService, Words } from '../service/list_words';
+import { ListDatasetsService, Datasets } from '../service/list_datasets';
 import { ListWordItem } from './list_word_item';
 
 interface Props  {
-  listWordsService: ListWordsService;
+  listDatasetsService: ListDatasetsService;
   isVisible: boolean;
 }
 
 interface State {
   hasLoaded: boolean;
   isLoading: boolean;
-  words: Words;
+  datasets: Datasets;
 }
 
 const localStyles = stylesheet({
@@ -50,7 +50,7 @@ export class ListWordsPanel extends React.Component<Props, State> {
     this.state = {
       hasLoaded: false,
       isLoading: false,
-      words: { words: [] },
+      datasets: { datasets: [] },
     };
   }
 
@@ -65,12 +65,12 @@ export class ListWordsPanel extends React.Component<Props, State> {
     const isFirstLoad =
       !(this.state.hasLoaded || prevProps.isVisible) && this.props.isVisible;
     if (isFirstLoad) {
-      this.getWords();
+      this.getDatasets();
     }
   }
 
   render() {
-    const { isLoading, words } = this.state;
+    const { isLoading, datasets } = this.state;
     return (
       <div className={localStyles.panel}>
         <header className={localStyles.header}>AutoML Project</header>
@@ -78,8 +78,8 @@ export class ListWordsPanel extends React.Component<Props, State> {
           <LinearProgress />
         ) : (
           <ul className={localStyles.list}>
-            {words.words.map(w => (
-              <ListWordItem key={w.id} word={w}/>
+            {datasets.datasets.map(dataset => (
+              <ListWordItem key={dataset.id} dataset={dataset}/>
             ))}
           </ul>
         )}
@@ -87,13 +87,13 @@ export class ListWordsPanel extends React.Component<Props, State> {
     );
   }
 
-  private async getWords() {
+  private async getDatasets() {
     try {
       this.setState({ isLoading: true });
-      const words = await this.props.listWordsService.listWords(20);
-      this.setState({ hasLoaded: true, words });
+      const datasets = await this.props.listDatasetsService.listDatasets(20);
+      this.setState({ hasLoaded: true, datasets: datasets });
     } catch (err) {
-      console.warn('Error retrieving words', err);
+      console.warn('Error retrieving datasets', err);
     } finally {
       this.setState({ isLoading: false });
     }
@@ -105,7 +105,7 @@ export class ListWordsWidget extends ReactWidget {
   id = 'listwords';
   private visibleSignal = new Signal<ListWordsWidget, boolean>(this);
 
-  constructor(private readonly listWordsService: ListWordsService) {
+  constructor(private readonly listWordsService: ListDatasetsService) {
     super();
     this.title.iconClass = 'jp-Icon jp-Icon-20 jp-AutoMLIcon';
     this.title.caption = 'AutoML Project';
@@ -125,7 +125,7 @@ export class ListWordsWidget extends ReactWidget {
         {(_, isVisible) => (
           <ListWordsPanel
             isVisible={isVisible}
-            listWordsService={this.listWordsService}
+            listDatasetsService={this.listWordsService}
           />
         )}
       </UseSignal>

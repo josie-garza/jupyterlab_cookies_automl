@@ -7,13 +7,13 @@ import {
 } from '@jupyterlab/application';
 
 import {ListWordsWidget} from './components/list_words_widget';
-import {ListWordsService} from './service/list_words';
+import {ListDatasetsService} from './service/list_datasets';
 
 
 async function activate(
   app: JupyterFrontEnd,
 ) {
-  const listWordsService = new ListWordsService();
+  const listWordsService = new ListDatasetsService();
   const listWidget = new ListWordsWidget(listWordsService);
   listWidget.addClass('jp-AutoMLIcon');
   app.shell.add(listWidget, 'left', {rank: 100});
