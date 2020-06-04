@@ -1,13 +1,8 @@
 # Lint as: python3
 """Request handler classes for the extensions."""
 
-import base64
 import json
-import re
 import tornado.gen as gen
-import os
-import random
-import logging
 
 from collections import namedtuple
 from notebook.base.handlers import APIHandler, app_log
@@ -58,9 +53,8 @@ class AuthProvider:
 
 def get_datasets(parent, client):
     datasets = client.list_datasets(parent)
-    response = []
-    for dataset in datasets:
-        response.append(
+    return {
+        "datasets": [
             {
                 "id": dataset.name,
                 "displayName": dataset.display_name,
@@ -69,19 +63,30 @@ def get_datasets(parent, client):
                 "exampleCount": dataset.example_count,
                 "metadata": "",
             }
-        )
-    return {"datasets": response}
+            for dataset in datasets
+        ]
+    }
 
 
-class ListHandler(APIHandler):
-    """Handles requests for Dummy List of Items."""
+class ListDatasets(APIHandler):
+    """Handles getting the datasets from GCP for the project."""
+
+    automl_client = None
+    parent = None
 
     @gen.coroutine
     def get(self, input=""):
         try:
-            client = automl_v1.AutoMlClient()
-            parent = client.location_path(AuthProvider.get().project, "us-central1")
-            self.finish(get_datasets(parent, client))
+            if not self.automl_client:
+                self.automl_client = automl_v1.AutoMlClient()
+
+            if not self.parent:
+                self.parent = self.automl_client.location_path(
+                    AuthProvider.get().project, "us-central1"
+                )
+
+            self.finish(json.dumps(get_datasets(self.parent, self.automl_client)))
+
         except Exception as e:
             app_log.exception(str(e))
             self.set_status(500, str(e))

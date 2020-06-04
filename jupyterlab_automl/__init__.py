@@ -1,6 +1,6 @@
 from notebook.utils import url_path_join
 
-from jupyterlab_automl.handlers import ListHandler
+from jupyterlab_automl.handlers import ListDatasets
 from jupyterlab_automl.version import VERSION
 
 __version__ = VERSION
@@ -24,6 +24,6 @@ def load_jupyter_server_extension(nb_server_app):
         [
             # TODO(cbwilkes): Add auth checking if needed.
             # (url_path_join(gcp_v1_endpoint, auth'), AuthHandler)
-            (url_path_join(gcp_v1_endpoint, "list") + "(.*)", ListHandler),
+            (url_path_join(gcp_v1_endpoint, "datasets") + "(.*)", ListDatasets),
         ],
     )
