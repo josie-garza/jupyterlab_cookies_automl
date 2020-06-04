@@ -17,7 +17,7 @@ export class ListDatasetsService {
 
   async listDatasets(num_items: number): Promise<Datasets> {
     try {
-      let data = await requestAPI<Datasets>('v1/list');
+      let data = await requestAPI<Datasets>('v1/datasets');
       console.log(data);
       return data;
     } catch (err) {
