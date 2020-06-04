@@ -3,7 +3,6 @@
 
 import json
 import tornado.gen as gen
-from datetime import datetime
 
 from collections import namedtuple
 from notebook.base.handlers import APIHandler, app_log
