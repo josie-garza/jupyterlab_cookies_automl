@@ -13,7 +13,7 @@ export interface Datasets {
   datasets: Dataset[];
 }
 
-export class ListDatasetsService {
+export class DatasetService {
 
   async listDatasets(num_items: number): Promise<Datasets> {
     try {

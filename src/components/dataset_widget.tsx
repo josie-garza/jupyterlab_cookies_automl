@@ -1,7 +1,7 @@
 import { ReactWidget, UseSignal } from '@jupyterlab/apputils';
 import * as React from 'react';
 import { Signal } from '@phosphor/signaling';
-import {Dataset} from "../service/list_datasets"
+import {Dataset} from "../service/dataset"
 
 interface Props {
   isVisible: boolean;
@@ -14,7 +14,7 @@ interface State {
   data: any;
 }
 
-export class ShowDatasetPanel extends React.Component<Props, State> {
+export class DatasetPanel extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -62,10 +62,10 @@ export class ShowDatasetPanel extends React.Component<Props, State> {
 }
 
 /** Widget to be registered in the left-side panel. */
-export class ShowDatasetWidget extends ReactWidget {
-  id: string;
+export class DatasetWidget extends ReactWidget {
+  id = 'dataset-widget';
   private datasetId: string;
-  private visibleSignal = new Signal<ShowDatasetWidget, boolean>(this);
+  private visibleSignal = new Signal<DatasetWidget, boolean>(this);
 
   constructor(dataset: Dataset) {
     super();
@@ -74,7 +74,6 @@ export class ShowDatasetWidget extends ReactWidget {
     this.title.closable = true;
     this.title.iconClass = 'jp-Icon jp-Icon-20 jp-AutoMLIcon';
     this.datasetId = dataset.id;
-    this.id = 'showdataset-' + dataset.id;
   }
 
   onAfterHide() {
@@ -89,7 +88,7 @@ export class ShowDatasetWidget extends ReactWidget {
     return (
       <UseSignal signal={this.visibleSignal}>
         {(_, isVisible) => (
-          <ShowDatasetPanel
+          <DatasetPanel
             isVisible={isVisible}
             dataset_id={this.datasetId}
           />

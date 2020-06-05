@@ -4,11 +4,12 @@ import * as csstips from 'csstips';
 import * as React from 'react';
 import { stylesheet } from 'typestyle';
 
-import { Dataset } from '../service/list_datasets';
+import { Dataset } from '../service/dataset';
 //import { COLORS, css } from '../styles';
 
 interface Props {
   dataset: Dataset;
+  handler: () => void;
 }
 
 const localStyles = stylesheet({
@@ -67,7 +68,8 @@ const GrayPending = withStyles({
   },
 })(Refresh);
 
-export class ListWordItem extends React.Component<Props, {}> {
+export class ListDatasetItem extends React.Component<Props, {}> {
+
   render() {
     const { dataset } = this.props;
     const create_time = new Date(dataset.createTime);
@@ -75,7 +77,7 @@ export class ListWordItem extends React.Component<Props, {}> {
       <li className={localStyles.item}>
         <div className={localStyles.icon}>{this.getIconForWord(dataset)}</div>
         <div className={localStyles.details}>
-          <a className="{css.link}" href="#">
+          <a className="{css.link}" onClick={this.props.handler}>
             {dataset.displayName}
           </a>
           <span className={localStyles.wordTime}>

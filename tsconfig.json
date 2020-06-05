@@ -2,16 +2,17 @@
   "compilerOptions": {
     "declaration": true,
     "jsx": "react",
-    "lib": ["es2015", "dom"],
+    "lib": ["es2017", "dom"],
     "module": "commonjs",
     "moduleResolution": "node",
     "noEmitOnError": true,
     "noUnusedLocals": true,
+    "esModuleInterop": true,
     "outDir": "lib",
     "rootDir": "src",
     "strict": true,
     "strictNullChecks": false,
-    "target": "es2015",
+    "target": "es2017",
     "skipLibCheck": true
   },
   "include": ["src"]
