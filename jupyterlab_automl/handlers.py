@@ -51,12 +51,20 @@ class AuthProvider:
         return cls._instance
 
 
-def get_datasets(parent, client):
+def create_automl_client():
+    return automl_v1.AutoMlClient()
+
+
+def create_automl_parent(client):
+    return client.location_path(AuthProvider.get().project, "us-central1")
+
+
+def get_datasets(client, parent):
     datasets = client.list_datasets(parent)
     return {
         "datasets": [
             {
-                "id": dataset.name,
+                "id": dataset.name.split("/")[-1],
                 "displayName": dataset.display_name,
                 "description": dataset.description,
                 "createTime": dataset.create_time.ToMilliseconds(),
@@ -64,6 +72,23 @@ def get_datasets(parent, client):
                 "metadata": "",
             }
             for dataset in datasets
+        ]
+    }
+
+
+def get_models(client, parent):
+    models = client.list_models(parent)
+    return {
+        "models": [
+            {
+                "id": model.name.split("/")[-1],
+                "displayName": model.display_name,
+                "datasetId": model.dataset_id,
+                "updateTime": model.update_time.ToMilliseconds(),
+                "deploymentState": model.deployment_state,
+                "metadata": "",
+            }
+            for model in models
         ]
     }
 
@@ -78,14 +103,35 @@ class ListDatasets(APIHandler):
     def get(self, input=""):
         try:
             if not self.automl_client:
-                self.automl_client = automl_v1.AutoMlClient()
+                self.automl_client = create_automl_client()
 
             if not self.parent:
-                self.parent = self.automl_client.location_path(
-                    AuthProvider.get().project, "us-central1"
-                )
+                self.parent = create_automl_parent(self.automl_client)
 
-            self.finish(json.dumps(get_datasets(self.parent, self.automl_client)))
+            self.finish(json.dumps(get_datasets(self.automl_client, self.parent)))
+
+        except Exception as e:
+            app_log.exception(str(e))
+            self.set_status(500, str(e))
+            self.finish({"error": {"message": str(e)}})
+
+
+class ListModels(APIHandler):
+    """Handles getting the models from GCP for the project."""
+
+    automl_client = None
+    parent = None
+
+    @gen.coroutine
+    def get(self, input=""):
+        try:
+            if not self.automl_client:
+                self.automl_client = create_automl_client()
+
+            if not self.parent:
+                self.parent = create_automl_parent(self.automl_client)
+
+            self.finish(json.dumps(get_models(self.automl_client, self.parent)))
 
         except Exception as e:
             app_log.exception(str(e))
