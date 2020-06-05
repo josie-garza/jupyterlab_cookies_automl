@@ -1,15 +1,25 @@
 import { ReactWidget, UseSignal } from '@jupyterlab/apputils';
+import {
+  JupyterFrontEnd
+} from '@jupyterlab/application';
 import { LinearProgress } from '@material-ui/core';
 import { Signal } from '@phosphor/signaling';
 import * as csstips from 'csstips';
 import * as React from 'react';
 import { stylesheet } from 'typestyle';
 
-import { ListDatasetsService, Datasets } from '../service/list_datasets';
-import { ListWordItem } from './list_word_item';
+import { DatasetService, Datasets } from '../service/dataset';
+import { ListDatasetItem } from './list_dataset_item';
+import { WidgetManager } from '../widget_manager'
 
-interface Props  {
-  listDatasetsService: ListDatasetsService;
+export interface Context {
+  app: JupyterFrontEnd,
+  manager: WidgetManager
+}
+
+interface Props {
+  context: Context;
+  datasetsService: DatasetService;
   isVisible: boolean;
 }
 
@@ -44,7 +54,7 @@ const localStyles = stylesheet({
   },
 });
 
-export class ListWordsPanel extends React.Component<Props, State> {
+export class ListDatasetsPanel extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -77,12 +87,15 @@ export class ListWordsPanel extends React.Component<Props, State> {
         {isLoading ? (
           <LinearProgress />
         ) : (
-          <ul className={localStyles.list}>
-            {datasets.datasets.map(dataset => (
-              <ListWordItem key={dataset.id} dataset={dataset}/>
-            ))}
-          </ul>
-        )}
+            <ul className={localStyles.list}>
+              {datasets.datasets.map(dataset => (
+                <ListDatasetItem key={dataset.id} dataset={dataset} handler={() => {
+                  this.props.context.manager.launchWidgetForId(dataset.id, dataset)
+                }
+                } />
+              ))}
+            </ul>
+          )}
       </div>
     );
   }
@@ -90,7 +103,7 @@ export class ListWordsPanel extends React.Component<Props, State> {
   private async getDatasets() {
     try {
       this.setState({ isLoading: true });
-      const datasets = await this.props.listDatasetsService.listDatasets(20);
+      const datasets = await this.props.datasetsService.listDatasets(20);
       this.setState({ hasLoaded: true, datasets: datasets });
     } catch (err) {
       console.warn('Error retrieving datasets', err);
@@ -101,14 +114,14 @@ export class ListWordsPanel extends React.Component<Props, State> {
 }
 
 /** Widget to be registered in the left-side panel. */
-export class ListWordsWidget extends ReactWidget {
-  id = 'listwords';
-  private visibleSignal = new Signal<ListWordsWidget, boolean>(this);
+export class AutoMLWidget extends ReactWidget {
+  id = 'listdatasets';
+  private visibleSignal = new Signal<AutoMLWidget, boolean>(this);
 
-  constructor(private readonly listWordsService: ListDatasetsService) {
+  constructor(private context: Context, private readonly datasetService: DatasetService) {
     super();
     this.title.iconClass = 'jp-Icon jp-Icon-20 jp-AutoMLIcon';
-    this.title.caption = 'AutoML Project';
+    this.title.caption = 'My Datasets';
   }
 
   onAfterHide() {
@@ -123,9 +136,10 @@ export class ListWordsWidget extends ReactWidget {
     return (
       <UseSignal signal={this.visibleSignal}>
         {(_, isVisible) => (
-          <ListWordsPanel
+          <ListDatasetsPanel
+            context={this.context}
             isVisible={isVisible}
-            listDatasetsService={this.listWordsService}
+            datasetsService={this.datasetService}
           />
         )}
       </UseSignal>

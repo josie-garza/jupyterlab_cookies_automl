@@ -10,16 +10,19 @@ import {
   ICommandPalette
 } from '@jupyterlab/apputils';
 
-import { ListWordsWidget } from './components/list_words_widget';
-import { ListDatasetsService } from './service/list_datasets';
-import { ShowDatasetWidget } from './components/show_dataset_widget';
+import { AutoMLWidget } from './components/automl_widget';
+import { DatasetService } from './service/dataset';
+import { DatasetWidget } from './components/dataset_widget';
+import { WidgetManager } from './widget_manager'
 
 async function activate(
   app: JupyterFrontEnd,
   palette: ICommandPalette
 ) {
-  const listWordsService = new ListDatasetsService();
-  const listWidget = new ListWordsWidget(listWordsService);
+  const datasetService = new DatasetService();
+  const manager = new WidgetManager(DatasetWidget, app);
+  const context = {app: app, manager: manager};
+  const listWidget = new AutoMLWidget(context, datasetService);
   listWidget.addClass('jp-AutoMLIcon');
   app.shell.add(listWidget, 'left', { rank: 100 });
   // Add an application command
@@ -27,15 +30,8 @@ async function activate(
   app.commands.addCommand(command, {
     label: 'Test open tab',
     execute: () => {
-      let widget = new ShowDatasetWidget(
-        { id: "abc", displayName: "abc", createTime: 123, exampleCount: 2, description: "", metadata: {} }
-      );
-      if (!widget.isAttached) {
-        // Attach the widget to the main work area if it's not there
-        app.shell.add(widget, 'main');
-      }
-      // Activate the widget
-      app.shell.activateById(widget.id);
+      let dataset = { id: "abc", displayName: "abc", createTime: 123, exampleCount: 2, description: "", metadata: {} };
+      manager.launchWidgetForId(dataset.id, dataset);
     }
   });
   const category = "AutoML";
