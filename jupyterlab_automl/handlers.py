@@ -61,28 +61,27 @@ def create_automl_parent(client):
 
 def get_column_specs(client, tableSpecId):
     column_specs = client.list_column_specs(tableSpecId)
-    return {
-        "columnSpecs": [
-            {
-                "id": column_spec.name,
-                "dataType": column_spec.data_type,
-                "displayName": column_spec.display_name,
-            }
-            for column_spec in column_specs
-        ]
-    }
+    return [
+        {
+            "id": column_spec.name,
+            "dataType": column_spec.data_type,
+            "displayName": column_spec.display_name,
+        }
+        for column_spec in column_specs
+    ]
 
 
 def get_table_specs(client, datasetId):
     table_specs = client.list_table_specs(datasetId)
     return {
-        "tableSpecs": [
+        "tableSpec": [
             {
                 "id": table_spec.name,
                 "rowCount": table_spec.row_count,
                 "validRowCount": table_spec.valid_row_count,
                 "columnCount": table_spec.column_count,
                 "name": table_spec.name,
+                "columnSpecs": get_column_specs(client, table_spec.name),
             }
             for table_spec in table_specs
         ]
@@ -162,6 +161,27 @@ class ListModels(APIHandler):
                 self.parent = create_automl_parent(self.automl_client)
 
             self.finish(json.dumps(get_models(self.automl_client, self.parent)))
+
+        except Exception as e:
+            app_log.exception(str(e))
+            self.set_status(500, str(e))
+            self.finish({"error": {"message": str(e)}})
+
+
+class ListTableInfo(APIHandler):
+    """Handles getting the table info for the dataset."""
+
+    automl_client = None
+
+    @gen.coroutine
+    def post(self, input=""):
+        datasetId = self.get_json_body()
+
+        try:
+            if not self.automl_client:
+                self.automl_client = create_automl_client()
+
+            self.finish(json.dumps(get_table_specs(self.automl_client, datasetId)))
 
         except Exception as e:
             app_log.exception(str(e))
