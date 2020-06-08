@@ -64,7 +64,7 @@ def get_datasets(client, parent):
     return {
         "datasets": [
             {
-                "id": dataset.name.split("/")[-1],
+                "id": dataset.name,
                 "displayName": dataset.display_name,
                 "description": dataset.description,
                 "createTime": dataset.create_time.ToMilliseconds(),
@@ -81,7 +81,7 @@ def get_models(client, parent):
     return {
         "models": [
             {
-                "id": model.name.split("/")[-1],
+                "id": model.name,
                 "displayName": model.display_name,
                 "datasetId": model.dataset_id,
                 "updateTime": model.update_time.ToMilliseconds(),
