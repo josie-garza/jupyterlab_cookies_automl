@@ -6,7 +6,7 @@ import tornado.gen as gen
 
 from collections import namedtuple
 from notebook.base.handlers import APIHandler, app_log
-from google.cloud import automl_v1
+from google.cloud import automl_v1beta1
 
 import google.auth
 from google.auth.exceptions import GoogleAuthError
@@ -52,11 +52,41 @@ class AuthProvider:
 
 
 def create_automl_client():
-    return automl_v1.AutoMlClient()
+    return automl_v1beta1.AutoMlClient()
 
 
 def create_automl_parent(client):
     return client.location_path(AuthProvider.get().project, "us-central1")
+
+
+def get_column_specs(client, tableSpecId):
+    column_specs = client.list_column_specs(tableSpecId)
+    return {
+        "columnSpecs": [
+            {
+                "id": column_spec.name,
+                "dataType": column_spec.data_type,
+                "displayName": column_spec.display_name,
+            }
+            for column_spec in column_specs
+        ]
+    }
+
+
+def get_table_specs(client, datasetId):
+    table_specs = client.list_table_specs(datasetId)
+    return {
+        "tableSpecs": [
+            {
+                "id": table_spec.name,
+                "rowCount": table_spec.row_count,
+                "validRowCount": table_spec.valid_row_count,
+                "columnCount": table_spec.column_count,
+                "name": table_spec.name,
+            }
+            for table_spec in table_specs
+        ]
+    }
 
 
 def get_datasets(client, parent):
@@ -64,7 +94,7 @@ def get_datasets(client, parent):
     return {
         "datasets": [
             {
-                "id": dataset.name.split("/")[-1],
+                "id": dataset.name,
                 "displayName": dataset.display_name,
                 "description": dataset.description,
                 "createTime": dataset.create_time.ToMilliseconds(),
@@ -81,7 +111,7 @@ def get_models(client, parent):
     return {
         "models": [
             {
-                "id": model.name.split("/")[-1],
+                "id": model.name,
                 "displayName": model.display_name,
                 "datasetId": model.dataset_id,
                 "updateTime": model.update_time.ToMilliseconds(),
