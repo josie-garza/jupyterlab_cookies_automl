@@ -51,7 +51,7 @@ const style: CSSProperties = {
         whiteSpace: 'nowrap',
         paddingTop: 0,
         paddingBottom: 0,
-        borderTop: '1px solid var(--jp-border-color1)'
+        borderTop: '1px solid var(--jp-border-color2)'
     },
     tableRow: {
         overflow: 'hidden',
