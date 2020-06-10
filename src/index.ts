@@ -12,6 +12,7 @@ import {
 
 import { AutoMLWidget } from './components/automl_widget';
 import { DatasetService } from './service/dataset';
+import { ModelService } from './service/model';
 import { DatasetWidget } from './components/dataset_widget';
 import { WidgetManager } from './widget_manager'
 
@@ -19,10 +20,11 @@ async function activate(
   app: JupyterFrontEnd,
   palette: ICommandPalette
 ) {
+  const modelService = new ModelService();
   const datasetService = new DatasetService();
   const manager = new WidgetManager(DatasetWidget, app);
   const context = {app: app, manager: manager};
-  const listWidget = new AutoMLWidget(context, datasetService);
+  const listWidget = new AutoMLWidget(context, datasetService, modelService);
   listWidget.addClass('jp-AutoMLIcon');
   app.shell.add(listWidget, 'left', { rank: 100 });
   // Add an application command

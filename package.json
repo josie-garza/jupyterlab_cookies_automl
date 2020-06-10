@@ -54,10 +54,8 @@
     "@material-ui/icons": "^3.0.2",
     "@types/base64-js": "^1.2.5",
     "@types/react": "^16.9.35",
-    "@types/react-dom": "^16.9.8",
     "material-table": "^1.59.0",
     "minimist": ">=1.2.2",
-    "react-dom": "^16.13.1",
     "typestyle": "^2.0.4",
     "yaml": "^1.7.2"
   },
@@ -94,8 +92,7 @@
     "typescript": "^3.7.5"
   },
   "peerDependencies": {
-    "react": "~16.13.0",
-    "react-dom": "~16.13.0"
+    "react": "~16.13.0"
   },
   "jupyterlab": {
     "extension": true,

@@ -1,16 +1,17 @@
-import { Box, Select, MenuItem, Toolbar, ListItem } from '@material-ui/core';
-import MaterialTable from 'material-table'
+import { Box, ListItem, MenuItem, Select, Toolbar } from '@material-ui/core';
 import TableChartOutlinedIcon from '@material-ui/icons/TableChartOutlined';
 import * as React from 'react';
 import { Dataset, DatasetService } from '../service/dataset';
+import { ModelService } from '../service/model';
 import { Context } from './automl_widget';
-import { CSSProperties } from '@material-ui/core/styles/withStyles';
+import { ListResourcesTable, ColumnType } from './list_resources_table'
 
 interface Props {
     width: number;
     height: number;
     context: Context;
-    datasetsService: DatasetService;
+    datasetService: DatasetService;
+    modelService: ModelService;
 }
 
 interface State {
@@ -18,35 +19,6 @@ interface State {
     isLoading: boolean;
     datasets: Dataset[];
     showSearch: boolean;
-}
-
-const style: CSSProperties = {
-    table: {
-        borderRadius: 0,
-        boxShadow: "none"
-    },
-    tableCell: {
-        fontSize: "var(--jp-ui-font-size1)",
-        whiteSpace: "nowrap",
-        textOverflow: "ellipsis",
-        overflow: "hidden",
-        paddingTop: 2,
-        paddingBottom: 2
-    },
-    headerCell: {
-        fontSize: "var(--jp-ui-font-size1)",
-        whiteSpace: "nowrap",
-        paddingTop: 0,
-        paddingBottom: 0,
-        borderTop: "1px solid var(--jp-border-color1)"
-    },
-    tableRow: {
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-    },
-    menuItem: {
-        fontSize: "var(--jp-ui-font-size1)",
-    }
 }
 
 export class ListResourcesPanel extends React.Component<Props, State> {
@@ -64,13 +36,14 @@ export class ListResourcesPanel extends React.Component<Props, State> {
     async componentDidMount() {
         try {
             this.getDatasets();
+            this.getDatasets();
         } catch (err) {
             console.warn('Unexpected error', err);
         }
     }
 
     render() {
-        const { isLoading, datasets } = this.state;
+        const { datasets } = this.state;
         // Temporary utility to simulate rendering 100 datasets
         const arr = [];
         for (let i = 0; i < 100; ++i) {
@@ -79,79 +52,49 @@ export class ListResourcesPanel extends React.Component<Props, State> {
         }
         return <>
             <link
-                rel="stylesheet"
-                href="https://fonts.googleapis.com/icon?family=Material+Icons"
+                rel='stylesheet'
+                href='https://fonts.googleapis.com/icon?family=Material+Icons'
             />
-            <Box height={1} width={1} bgcolor={"white"} borderRadius={0}>
-                <Toolbar variant="dense">
+            <Box height={1} width={1} bgcolor={'white'} borderRadius={0}>
+                <Toolbar variant='dense'>
                     <Select
                         style={{
-                            fontSize: "var(--jp-ui-font-size0)",
+                            fontSize: 'var(--jp-ui-font-size0)',
                             fontWeight: 600,
-                            textTransform: "uppercase"
+                            textTransform: 'uppercase'
                         }}
                         value={10}
                     >
-                        <MenuItem style={style.menuItem} value={10}>Datasets</MenuItem>
-                        <MenuItem style={style.menuItem} value={20}>Models</MenuItem>
+                        <MenuItem style={{fontSize: 'var(--jp-ui-font-size1)'}} value={10}>Datasets</MenuItem>
+                        <MenuItem style={{fontSize: 'var(--jp-ui-font-size1)'}} value={20}>Models</MenuItem>
                     </Select>
                 </Toolbar>
 
-                <MaterialTable
-                    title="My Datasets"
+                <ListResourcesTable
                     columns={[
                         {
                             field: 'displayName',
                             title: 'Name',
                             render: rowData => (<ListItem dense style={{ padding: 0 }}>
                                 <TableChartOutlinedIcon></TableChartOutlinedIcon>
-                                <span style={{ textOverflow: "ellipsis" }}> {'\u00A0\u00A0' + rowData.displayName}</span>
+                                <span style={{ textOverflow: 'ellipsis' }}> {'\u00A0\u00A0' + rowData.displayName}</span>
                             </ListItem>),
-                            cellStyle: style.tableCell,
-                            headerStyle: style.headerCell,
                         },
                         {
-                            title: 'Examples', field: 'exampleCount', type: 'numeric',
-                            cellStyle: style.tableCell,
-                            headerStyle: style.headerCell,
-                            hidden: (this.props.width < 380)
+                            title: 'Examples', field: 'exampleCount', type: ColumnType.Numeric,
+                            minShowWidth: 380
                         },
                         {
-                            title: 'Created at', field: 'createTime', type: 'datetime',
-                            cellStyle: { ...(style.tableCell as object), textAlign: 'right' },
-                            headerStyle: style.headerCell,
-                            hidden: (this.props.width < 250)
+                            title: 'Created at', field: 'createTime', type: ColumnType.DateTime,
+                            rightAlign: true,
+                            minShowWidth: 250
                         }
                     ]}
                     data={arr}
-                    options={{
-                        showTitle: false,
-                        tableLayout: "fixed",
-                        pageSize: 20,
-                        pageSizeOptions: [20],
-                        search: this.state.showSearch,
-                        sorting: true,
-                        searchFieldStyle: { fontSize: "var(--jp-ui-font-size1)" },
-                        searchFieldVariant: "outlined",
-                        padding: "dense",
-                        toolbar: false,
-                        rowStyle: style.tableRow,
-                        minBodyHeight: this.props.height - 100, //TODO Get this number programmatically
-                        maxBodyHeight: this.props.height - 100
-                    }}
-                    actions={[
-                        {
-                            icon: 'add',
-                            tooltip: 'Save User',
-                            isFreeAction: true,
-                            onClick: (event, rowData) => {
-                                this.setState({ showSearch: !this.state.showSearch });
-                            }
-                        }
-                    ]}
-                    style={style.table}
-                    isLoading={isLoading}
-                    onRowClick={(_, rowData) => { this.props.context.manager.launchWidgetForId(rowData.id, rowData) }}
+                    onRowClick={(rowData) => { this.props.context.manager.launchWidgetForId(rowData.id, rowData) }}
+                    isLoading={this.state.isLoading}
+                    height={this.props.height - 100}
+                    width={this.props.width}
                 />
             </Box>
         </>;
@@ -160,7 +103,7 @@ export class ListResourcesPanel extends React.Component<Props, State> {
     private async getDatasets() {
         try {
             this.setState({ isLoading: true });
-            const datasets = await this.props.datasetsService.listDatasets();
+            const datasets = await this.props.datasetService.listDatasets();
             this.setState({ hasLoaded: true, datasets: datasets });
         } catch (err) {
             console.warn('Error retrieving datasets', err);
@@ -168,4 +111,15 @@ export class ListResourcesPanel extends React.Component<Props, State> {
             this.setState({ isLoading: false });
         }
     }
+    /*private async getModels() {
+        try {
+            this.setState({ isLoading: true });
+            const datasets = await this.props.datasetService.listDatasets();
+            this.setState({ hasLoaded: true, datasets: datasets });
+        } catch (err) {
+            console.warn('Error retrieving datasets', err);
+        } finally {
+            this.setState({ isLoading: false });
+        }
+    }*/
 }

@@ -3,7 +3,7 @@ import * as React from 'react';
 import {Dataset} from "../service/dataset"
 
 interface Props {
-  datasetId: string;
+  dataset: Dataset;
 }
 
 interface State {
@@ -33,7 +33,7 @@ export class DatasetPanel extends React.Component<Props, State> {
   render() {
     return (
       <div>
-        {this.props.datasetId}
+        {this.props.dataset.id}
       </div>
     );
   }
@@ -55,20 +55,18 @@ export class DatasetPanel extends React.Component<Props, State> {
 /** Widget to be registered in the left-side panel. */
 export class DatasetWidget extends ReactWidget {
   id = 'dataset-widget';
-  private datasetId: string;
 
-  constructor(dataset: Dataset) {
+  constructor(private readonly datasetMeta: Dataset) {
     super();
-    this.title.label = dataset.displayName;
+    this.title.label = datasetMeta.displayName;
     this.title.caption = 'AutoML Project';
     this.title.closable = true;
     this.title.iconClass = 'jp-Icon jp-Icon-20 jp-AutoMLIcon';
-    this.datasetId = dataset.id;
   }
 
   render() {
     return (
-      <DatasetPanel datasetId={this.datasetId}></DatasetPanel>
+      <DatasetPanel dataset={this.datasetMeta}></DatasetPanel>
     );
   }
 }

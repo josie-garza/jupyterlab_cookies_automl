@@ -3,6 +3,7 @@ import { JupyterFrontEnd } from '@jupyterlab/application';
 import * as React from 'react';
 import { Signal } from '@lumino/signaling';
 import { DatasetService } from '../service/dataset';
+import { ModelService } from '../service/model';
 import { WidgetManager } from '../widget_manager'
 import { ListResourcesPanel } from './list_resources_panel';
 import { Widget } from '@lumino/widgets';
@@ -17,7 +18,9 @@ export class AutoMLWidget extends ReactWidget {
   id = 'automl_widget';
   private resizeSignal = new Signal<AutoMLWidget, Widget.ResizeMessage>(this);
 
-  constructor(private context: Context, private readonly datasetService: DatasetService) {
+  constructor(private context: Context,
+    private readonly datasetService: DatasetService,
+    private readonly modelService: ModelService) {
     super();
     this.title.iconClass = 'jp-Icon jp-Icon-20 jp-AutoMLIcon';
     this.title.caption = 'My Datasets';
@@ -38,7 +41,8 @@ export class AutoMLWidget extends ReactWidget {
               width={w}
               height={h}
               context={this.context}
-              datasetsService={this.datasetService}
+              datasetService={this.datasetService}
+              modelService={this.modelService}
             />
           )
         }}
