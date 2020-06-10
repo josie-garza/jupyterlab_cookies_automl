@@ -64,7 +64,7 @@ def get_column_specs(client, tableSpecId):
     return [
         {
             "id": column_spec.name,
-            "dataType": column_spec.data_type,
+            "dataType": column_spec.data_type.type_code,
             "displayName": column_spec.display_name,
         }
         for column_spec in column_specs
@@ -74,13 +74,12 @@ def get_column_specs(client, tableSpecId):
 def get_table_specs(client, datasetId):
     table_specs = client.list_table_specs(datasetId)
     return {
-        "tableSpec": [
+        "tableSpecs": [
             {
                 "id": table_spec.name,
                 "rowCount": table_spec.row_count,
                 "validRowCount": table_spec.valid_row_count,
                 "columnCount": table_spec.column_count,
-                "name": table_spec.name,
                 "columnSpecs": get_column_specs(client, table_spec.name),
             }
             for table_spec in table_specs
@@ -175,8 +174,8 @@ class ListTableInfo(APIHandler):
 
     @gen.coroutine
     def post(self, input=""):
-        datasetId = self.get_json_body()
-
+        body = self.get_json_body()
+        datasetId = body["datasetId"]
         try:
             if not self.automl_client:
                 self.automl_client = create_automl_client()
