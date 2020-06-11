@@ -10,8 +10,6 @@ interface Props {
     width: number;
     height: number;
     context: Context;
-    datasetService: DatasetService;
-    modelService: ModelService;
 }
 
 enum ResourceType {
@@ -143,7 +141,7 @@ export class ListResourcesPanel extends React.Component<Props, State> {
     private async getDatasets() {
         try {
             this.setState({ isLoading: true });
-            const datasets = await this.props.datasetService.listDatasets();
+            const datasets = await DatasetService.listDatasets();
             this.setState({ hasLoaded: true, datasets: datasets });
         } catch (err) {
             console.warn('Error retrieving datasets', err);
@@ -155,7 +153,7 @@ export class ListResourcesPanel extends React.Component<Props, State> {
     private async getModels() {
         try {
             this.setState({ isLoading: true });
-            const models = await this.props.modelService.listModels();
+            const models = await ModelService.listModels();
             this.setState({ hasLoaded: true, models: models });
         } catch (err) {
             console.warn('Error retrieving models', err);

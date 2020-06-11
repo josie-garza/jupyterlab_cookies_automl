@@ -9,18 +9,52 @@ export interface Dataset {
   metadata: any;
 }
 
+export interface ColumnSpec {
+  id: string;
+  dataType: string;
+  displayName: string;
+}
+
+export interface TableSpec {
+  id: string;
+  rowCount: number;
+  validRowCount: number;
+  columnCount: number;
+  columnSpecs: ColumnSpec[];
+}
+
+export interface TableInfo {
+  tableSpecs: TableSpec[];
+}
+
 export interface Datasets {
   datasets: Dataset[];
 }
 
-export class DatasetService {
+export abstract class DatasetService {
 
-  async listDatasets(): Promise<Dataset[]> {
+  static async listDatasets(): Promise<Dataset[]> {
     try {
       let data = (await requestAPI<Datasets>('v1/datasets')).datasets;
-      for (let i = 0; i < data.length; ++i)  {
+      for (let i = 0; i < data.length; ++i) {
         data[i].createTime = new Date(data[i].createTime);
       }
+      return data;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  static async listTableSpecs(datasetId: string): Promise<TableSpec[]> {
+    try {
+      const body = {
+        'datasetId': datasetId,
+      }
+      const requestInit: RequestInit = {
+        body: JSON.stringify(body),
+        method: "POST",
+      };
+      let data = (await requestAPI<TableInfo>('v1/tableInfo', requestInit)).tableSpecs;
       return data;
     } catch (err) {
       throw err;

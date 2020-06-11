@@ -6,7 +6,7 @@ import tornado.gen as gen
 
 from collections import namedtuple
 from notebook.base.handlers import APIHandler, app_log
-from google.cloud import automl_v1
+from google.cloud import automl_v1beta1
 
 import google.auth
 from google.auth.exceptions import GoogleAuthError
@@ -52,11 +52,39 @@ class AuthProvider:
 
 
 def create_automl_client():
-    return automl_v1.AutoMlClient()
+    return automl_v1beta1.AutoMlClient()
 
 
 def create_automl_parent(client):
     return client.location_path(AuthProvider.get().project, "us-central1")
+
+
+def get_column_specs(client, tableSpecId):
+    column_specs = client.list_column_specs(tableSpecId)
+    return [
+        {
+            "id": column_spec.name,
+            "dataType": column_spec.data_type.type_code,
+            "displayName": column_spec.display_name,
+        }
+        for column_spec in column_specs
+    ]
+
+
+def get_table_specs(client, datasetId):
+    table_specs = client.list_table_specs(datasetId)
+    return {
+        "tableSpecs": [
+            {
+                "id": table_spec.name,
+                "rowCount": table_spec.row_count,
+                "validRowCount": table_spec.valid_row_count,
+                "columnCount": table_spec.column_count,
+                "columnSpecs": get_column_specs(client, table_spec.name),
+            }
+            for table_spec in table_specs
+        ]
+    }
 
 
 def get_datasets(client, parent):
@@ -132,6 +160,27 @@ class ListModels(APIHandler):
                 self.parent = create_automl_parent(self.automl_client)
 
             self.finish(json.dumps(get_models(self.automl_client, self.parent)))
+
+        except Exception as e:
+            app_log.exception(str(e))
+            self.set_status(500, str(e))
+            self.finish({"error": {"message": str(e)}})
+
+
+class ListTableInfo(APIHandler):
+    """Handles getting the table info for the dataset."""
+
+    automl_client = None
+
+    @gen.coroutine
+    def post(self, input=""):
+        body = self.get_json_body()
+        datasetId = body["datasetId"]
+        try:
+            if not self.automl_client:
+                self.automl_client = create_automl_client()
+
+            self.finish(json.dumps(get_table_specs(self.automl_client, datasetId)))
 
         except Exception as e:
             app_log.exception(str(e))
