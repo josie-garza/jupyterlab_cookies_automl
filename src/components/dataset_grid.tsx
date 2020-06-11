@@ -8,7 +8,6 @@ import { DatasetService, TableSpec } from '../service/dataset';
 
 
 interface Props {
-    isVisible: boolean;
     id: string;
 }
 

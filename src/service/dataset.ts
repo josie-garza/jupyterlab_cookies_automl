@@ -47,14 +47,8 @@ export abstract class DatasetService {
 
   static async listTableSpecs(datasetId: string): Promise<TableSpec[]> {
     try {
-      const body = {
-        'datasetId': datasetId,
-      }
-      const requestInit: RequestInit = {
-        body: JSON.stringify(body),
-        method: "POST",
-      };
-      let data = (await requestAPI<TableInfo>('v1/tableInfo', requestInit)).tableSpecs;
+      const query = '?datasetId=' + datasetId;
+      let data = (await requestAPI<TableInfo>('v1/tableInfo' + query)).tableSpecs;
       return data;
     } catch (err) {
       throw err;

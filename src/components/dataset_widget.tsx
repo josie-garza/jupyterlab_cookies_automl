@@ -26,7 +26,6 @@ export class DatasetPanel extends React.Component<Props, State> {
   render() {
     return (
       <GridComponent
-        isVisible={true}
         id={this.props.dataset.id}
       />
     );

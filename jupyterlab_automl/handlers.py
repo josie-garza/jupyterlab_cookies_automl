@@ -173,9 +173,8 @@ class ListTableInfo(APIHandler):
     automl_client = None
 
     @gen.coroutine
-    def post(self, input=""):
-        body = self.get_json_body()
-        datasetId = body["datasetId"]
+    def get(self, input=""):
+        datasetId = self.get_argument("datasetId")
         try:
             if not self.automl_client:
                 self.automl_client = create_automl_client()
