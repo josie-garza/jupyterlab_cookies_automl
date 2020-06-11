@@ -48,16 +48,14 @@
     "@jupyterlab/launcher": "^1.0.3",
     "@jupyterlab/mainmenu": "^1.0.2",
     "@jupyterlab/notebook": "^1.0.2",
-    "@material-ui/core": "^3.9.3",
+    "@lumino/signaling": "^1.4.0",
+    "@lumino/widgets": "^1.13.0",
+    "@material-ui/core": "^4.10.1",
     "@material-ui/icons": "^3.0.2",
-    "@phosphor/disposable": "^1.2.0",
-    "@phosphor/widgets": "^1.8.1",
     "@types/base64-js": "^1.2.5",
     "@types/react": "^16.9.35",
-    "@types/react-dom": "^16.9.8",
-    "acorn": ">=7.1.1",
-    "csstips": "^1.1.0",
-    "formik": "^1.5.8",
+    "csstips": "^1.2.0",
+    "material-table": "^1.59.0",
     "minimist": ">=1.2.2",
     "typestyle": "^2.0.4",
     "yaml": "^1.7.2"
@@ -95,8 +93,7 @@
     "typescript": "^3.7.5"
   },
   "peerDependencies": {
-    "react": "~16.13.0",
-    "react-dom": "~16.13.0"
+    "react": "~16.13.0"
   },
   "jupyterlab": {
     "extension": true,
