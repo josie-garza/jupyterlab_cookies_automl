@@ -7,6 +7,7 @@ export interface Dataset {
   createTime: Date;
   exampleCount: number;
   metadata: any;
+  datasetType: string;
 }
 
 export interface ColumnSpec {

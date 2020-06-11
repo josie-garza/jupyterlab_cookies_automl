@@ -88,19 +88,35 @@ def get_table_specs(client, datasetId):
 
 
 def get_datasets(client, parent):
-    datasets = client.list_datasets(parent)
-    return {
-        "datasets": [
-            {
+    datasets = []
+    for dataset in client.list_datasets(parent):
+        dataset_type = "other"
+        metadata = ""
+        if dataset.tables_dataset_metadata.primary_table_spec_id != "":
+            dataset_type = "tables"
+            metadata = {
+                "primary_table_spec_id" : dataset.tables_dataset_metadata.primary_table_spec_id,
+                "target_column_spec_id" : dataset.tables_dataset_metadata.target_column_spec_id,
+                "weight_column_spec_id" : dataset.tables_dataset_metadata.weight_column_spec_id,
+                "ml_use_column_spec_id" : dataset.tables_dataset_metadata.ml_use_column_spec_id,
+                "stats_update_time" : dataset.tables_dataset_metadata.stats_update_time.ToMilliseconds(),
+            }
+        elif dataset.image_classification_dataset_metadata.classification_type != "":
+            dataset_type = "image_classification"
+            metadata = {
+                "classification_type" : dataset.image_classification_dataset_metadata.classification_type,
+            }
+        datasets.append({
                 "id": dataset.name,
                 "displayName": dataset.display_name,
                 "description": dataset.description,
                 "createTime": dataset.create_time.ToMilliseconds(),
                 "exampleCount": dataset.example_count,
-                "metadata": "",
-            }
-            for dataset in datasets
-        ]
+                "metadata": metadata,
+                "datasetType": dataset_type,
+        })
+    return {
+        "datasets": datasets
     }
 
 
