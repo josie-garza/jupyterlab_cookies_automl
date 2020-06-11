@@ -3,7 +3,7 @@ import * as csstips from 'csstips';
 import * as React from 'react';
 import { stylesheet } from 'typestyle';
 import Paper from '@material-ui/core/Paper';
-import Grid, { GridSpacing } from '@material-ui/core/Grid';
+import Grid from '@material-ui/core/Grid';
 import { DatasetService, TableSpec } from '../service/dataset';
 
 
@@ -77,7 +77,7 @@ export class GridComponent extends React.Component<Props, State> {
                         <ul className={localStyles.list}>
                             {tableSpecs.map(tableSpec => (
                                 <div key={tableSpec.id} className={localStyles.root}>
-                                    <Grid container spacing={Number(24) as GridSpacing}>
+                                    <Grid container spacing={5}>
                                         <Grid item xs={6}>
                                             <Paper className={localStyles.paper}><p>Summary</p><p>Total Columns: {tableSpec.columnCount}</p><p>Total Rows:  {tableSpec.rowCount}</p> </Paper>
                                         </Grid>

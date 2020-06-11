@@ -100,7 +100,7 @@ export class ListResourcesPanel extends React.Component<Props, State> {
                                 minShowWidth: 250
                             }
                         ]}
-                        data={arr}
+                        data={datasets}
                         onRowClick={(rowData) => { this.props.context.manager.launchWidgetForId(rowData.id, rowData) }}
                         isLoading={this.state.isLoading}
                         height={this.props.height - 100}
