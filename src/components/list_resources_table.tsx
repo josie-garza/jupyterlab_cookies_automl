@@ -1,7 +1,43 @@
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
-import MaterialTable from 'material-table';
-import * as React from 'react';
+import AddBox from '@material-ui/icons/AddBox';
+import ArrowDownward from '@material-ui/icons/ArrowDownward';
+import Check from '@material-ui/icons/Check';
+import ChevronLeft from '@material-ui/icons/ChevronLeft';
+import ChevronRight from '@material-ui/icons/ChevronRight';
+import Clear from '@material-ui/icons/Clear';
+import DeleteOutline from '@material-ui/icons/DeleteOutline';
+import Edit from '@material-ui/icons/Edit';
+import FilterList from '@material-ui/icons/FilterList';
+import FirstPage from '@material-ui/icons/FirstPage';
+import LastPage from '@material-ui/icons/LastPage';
+import Remove from '@material-ui/icons/Remove';
+import SaveAlt from '@material-ui/icons/SaveAlt';
+import Search from '@material-ui/icons/Search';
+import ViewColumn from '@material-ui/icons/ViewColumn';
+import MaterialTable, { Icons } from 'material-table';
+import React, { forwardRef } from 'react';
 
+
+
+const tableIcons: Icons = {
+    Add: forwardRef((props: any, ref: any) => <AddBox {...props} ref={ref} />),
+    Check: forwardRef((props: any, ref: any) => <Check {...props} ref={ref} />),
+    Clear: forwardRef((props: any, ref: any) => <Clear {...props} ref={ref} />),
+    Delete: forwardRef((props: any, ref: any) => <DeleteOutline {...props} ref={ref} />),
+    DetailPanel: forwardRef((props: any, ref: any) => <ChevronRight {...props} ref={ref} />),
+    Edit: forwardRef((props: any, ref: any) => <Edit {...props} ref={ref} />),
+    Export: forwardRef((props: any, ref: any) => <SaveAlt {...props} ref={ref} />),
+    Filter: forwardRef((props: any, ref: any) => <FilterList {...props} ref={ref} />),
+    FirstPage: forwardRef((props: any, ref: any) => <FirstPage {...props} fontSize="small" ref={ref} />),
+    LastPage: forwardRef((props: any, ref: any) => <LastPage {...props} fontSize="small" ref={ref} />),
+    NextPage: forwardRef((props: any, ref: any) => <ChevronRight {...props} fontSize="small" ref={ref} />),
+    PreviousPage: forwardRef((props: any, ref: any) => <ChevronLeft {...props} fontSize="small" ref={ref} />),
+    ResetSearch: forwardRef((props: any, ref: any) => <Clear {...props} ref={ref} />),
+    Search: forwardRef((props: any, ref: any) => <Search {...props} ref={ref} />),
+    SortArrow: forwardRef((props: any, ref: any) => <ArrowDownward {...props} fontSize="small" ref={ref} />),
+    ThirdStateCheck: forwardRef((props: any, ref: any) => <Remove {...props} ref={ref} />),
+    ViewColumn: forwardRef((props: any, ref: any) => <ViewColumn {...props} ref={ref} />)
+};
 
 export enum ColumnType {
     Boolean = 'boolean',
@@ -19,6 +55,8 @@ export interface ResourceColumn {
     minShowWidth?: number;
     rightAlign?: boolean;
     render?: (rowData: any) => JSX.Element;
+    fixedWidth?: number;
+    sorting?: boolean;
 }
 
 interface Props {
@@ -28,9 +66,6 @@ interface Props {
     columns: ResourceColumn[];
     isLoading?: boolean;
     onRowClick?: (rowData: any) => void;
-}
-
-interface State {
 }
 
 const style: CSSProperties = {
@@ -43,14 +78,12 @@ const style: CSSProperties = {
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
         overflow: 'hidden',
-        paddingTop: 2,
-        paddingBottom: 2
+        padding: "5px 8px"
     },
     headerCell: {
         fontSize: 'var(--jp-ui-font-size1)',
         whiteSpace: 'nowrap',
-        paddingTop: 0,
-        paddingBottom: 0,
+        padding: "0px 8px",
         borderTop: '1px solid var(--jp-border-color2)'
     },
     tableRow: {
@@ -59,65 +92,50 @@ const style: CSSProperties = {
     }
 }
 
-export class ListResourcesTable extends React.Component<Props, State> {
+export class ListResourcesTable extends React.PureComponent<Props> {
 
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    async componentDidMount() {
+    private rightAlign = (cls: Object) => {
+        return { ...cls, textAlign: 'right', flexDirection: 'row-reverse' };
     }
 
     render() {
-        return (
-            <MaterialTable
-                columns={
-                    this.props.columns.map((col: ResourceColumn) => {
-                        return {
-                            field: col.field,
-                            title: col.title,
-                            type: col.type,
-                            render: col.render,
-                            cellStyle: col.rightAlign ? { ...(style.tableCell as object), textAlign: 'right' } : style.tableCell,
-                            headerStyle: style.headerCell,
-                            hidden: (this.props.width < col.minShowWidth)
-                        };
-                    })}
-                data={this.props.data}
-                options={{
-                    showTitle: false,
-                    tableLayout: 'fixed',
-                    pageSize: 20,
-                    pageSizeOptions: [20],
-                    search: false,
-                    sorting: true,
-                    searchFieldStyle: { fontSize: 'var(--jp-ui-font-size1)' },
-                    searchFieldVariant: 'outlined',
-                    padding: 'dense',
-                    toolbar: false,
-                    rowStyle: style.tableRow,
-                    minBodyHeight: this.props.height, //TODO Get this number programmatically
-                    maxBodyHeight: this.props.height
-                }}
-                actions={[
-                    {
-                        icon: 'add',
-                        tooltip: 'Save User',
-                        isFreeAction: true,
-                        onClick: (event, rowData) => {
-                        }
-                    }
-                ]}
-                style={style.table}
-                isLoading={this.props.isLoading}
-                onRowClick={(_, rowData) => {
-                    if (this.props.onRowClick) {
-                        this.props.onRowClick(rowData)
-                    }
-                }}
-            />
-        );
+        return <MaterialTable
+            icons={tableIcons}
+            columns={
+                this.props.columns.map((col: ResourceColumn, i: number) => {
+                    return {
+                        field: col.field,
+                        title: col.title,
+                        type: col.type,
+                        render: col.render,
+                        cellStyle: col.rightAlign ? this.rightAlign(style.tableCell) : style.tableCell,
+                        headerStyle: col.rightAlign ? this.rightAlign(style.headerCell) : style.headerCell,
+                        hidden: (this.props.width < col.minShowWidth),
+                        width: col.fixedWidth,
+                        sorting: (col.sorting === undefined) ? true : col.sorting
+                    };
+                })}
+            data={this.props.data}
+            options={{
+                showTitle: false,
+                tableLayout: 'fixed',
+                pageSize: 20,
+                pageSizeOptions: [20],
+                search: false,
+                sorting: true,
+                padding: 'dense',
+                toolbar: false,
+                rowStyle: style.tableRow,
+                minBodyHeight: this.props.height, //TODO Get this number programmatically
+                maxBodyHeight: this.props.height
+            }}
+            style={style.table}
+            isLoading={this.props.isLoading}
+            onRowClick={(_, rowData) => {
+                if (this.props.onRowClick) {
+                    this.props.onRowClick(rowData)
+                }
+            }}
+        />;
     }
 }
