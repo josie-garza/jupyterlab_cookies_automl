@@ -1,14 +1,15 @@
 import { LinearProgress } from '@material-ui/core';
-import * as csstips from 'csstips';
 import * as React from 'react';
 import { stylesheet } from 'typestyle';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
-import { DatasetService, TableSpec } from '../service/dataset';
+import { DatasetService, TableSpec, Dataset } from '../service/dataset';
 
 
 interface Props {
-    id: string;
+    dataset: Dataset;
+    value: number;
+    index: number;
 }
 
 interface State {
@@ -29,16 +30,11 @@ const localStyles = stylesheet({
     },
     panel: {
         backgroundColor: 'white',
-        //color: COLORS.base,
         height: '100%',
-        //...BASE_FONT,
-        ...csstips.vertical,
     },
     list: {
         margin: 0,
-        overflowY: 'scroll',
         padding: 0,
-        ...csstips.flex,
     },
     root: {
         flexGrow: 1,
@@ -68,12 +64,12 @@ export class GridComponent extends React.Component<Props, State> {
         const { isLoading, tableSpecs } = this.state;
 
         return (
-            <div className={localStyles.panel}>
-                <header className={localStyles.header}>{this.props.id}</header>
+            <div hidden={this.props.value !== this.props.index} className={localStyles.panel} >
+                <header className={localStyles.header}>{this.props.dataset.displayName}</header>
                 {isLoading ? (
                     <LinearProgress />
                 ) : (
-                        <ul className={localStyles.list}>
+                        <div className={localStyles.list}>
                             {tableSpecs.map(tableSpec => (
                                 <div key={tableSpec.id} className={localStyles.root}>
                                     <Grid container spacing={5}>
@@ -93,7 +89,7 @@ export class GridComponent extends React.Component<Props, State> {
                                     </Grid>
                                 </div>
                             ))}
-                        </ul>
+                        </div>
                     )}
             </div>
         );
@@ -102,7 +98,7 @@ export class GridComponent extends React.Component<Props, State> {
     private async getTableDetails() {
         try {
             this.setState({ isLoading: true });
-            const tableSpecs = await DatasetService.listTableSpecs(this.props.id);
+            const tableSpecs = await DatasetService.listTableSpecs(this.props.dataset.id);
             this.setState({ hasLoaded: true, tableSpecs: tableSpecs });
         } catch (err) {
             console.warn('Error retrieving table details', err);
