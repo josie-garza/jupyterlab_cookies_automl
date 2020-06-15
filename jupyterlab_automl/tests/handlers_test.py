@@ -9,12 +9,17 @@ from google.cloud.automl_v1beta1.types import (
     Model,
     DataType,
     TableSpec,
-    ColumnSpec
+    ColumnSpec,
+    TablesDatasetMetadata,
+    ImageClassificationDatasetMetadata
 )
 
 
 class TestAutoMLExtension(unittest.TestCase):
     def testListDatasets(self):
+        metadata = ImageClassificationDatasetMetadata(
+            classification_type=1
+        )
         time = Timestamp(seconds=0, nanos=0)
         gcp_datasets = [
             Dataset(
@@ -23,13 +28,7 @@ class TestAutoMLExtension(unittest.TestCase):
                 create_time=time,
                 example_count=9999,
                 description="dummy_description",
-            ),
-            Dataset(
-                display_name="dummy_dataset2",
-                name="dummy_dataset2",
-                create_time=time,
-                example_count=1515,
-                description="dummy_description",
+                image_classification_dataset_metadata=metadata
             ),
         ]
 
@@ -45,19 +44,13 @@ class TestAutoMLExtension(unittest.TestCase):
                     "description": "dummy_description",
                     "createTime": 0,
                     "exampleCount": 9999,
-                    "metadata": "",
-                },
-                {
-                    "id": "dummy_dataset2",
-                    "displayName": "dummy_dataset2",
-                    "description": "dummy_description",
-                    "createTime": 0,
-                    "exampleCount": 1515,
-                    "metadata": "",
+                    "metadata": {
+                        "classification_type": 1,
+                    },
+                    "datasetType": "image_classification",
                 },
             ]
         }
-
         got = handlers.get_datasets(mock_client, mock_parent)
         self.assertEqual(wanted, got)
 
@@ -120,7 +113,7 @@ class TestAutoMLExtension(unittest.TestCase):
         ]
         gcp_table_specs = [
             TableSpec(
-                name="dummy_table1", row_count=4, valid_row_count=4, column_count=2,
+                name="dummy_table1", row_count=3, valid_row_count=4, column_count=2,
             ),
         ]
 
@@ -134,10 +127,10 @@ class TestAutoMLExtension(unittest.TestCase):
         ]
 
         wanted_table = {
-            "tableSpec": [
+            "tableSpecs": [
                 {
                     "id": "dummy_table1",
-                    "rowCount": 4,
+                    "rowCount": 3,
                     "validRowCount": 4,
                     "columnCount": 2,
                     "columnSpecs": wanted_column,

@@ -1,5 +1,7 @@
-import { requestAPI } from "./api_request"
+import { requestAPI } from "./api_request";
 
+
+export type DatasetType = "tables" | "image_classification" | "other";
 export interface Dataset {
   id: string; // Resource name of dataset
   displayName: string;
@@ -7,6 +9,7 @@ export interface Dataset {
   createTime: Date;
   exampleCount: number;
   metadata: any;
+  datasetType: DatasetType;
 }
 
 export interface ColumnSpec {
