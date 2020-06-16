@@ -1,6 +1,6 @@
 from notebook.utils import url_path_join
 
-from jupyterlab_automl.handlers import ListDatasets, ListModels, ListTableInfo
+from jupyterlab_automl.handlers import ListDatasets, ListModels, ListTableInfo, DeleteDataset, DeleteModel
 from jupyterlab_automl.version import VERSION
 
 __version__ = VERSION
@@ -27,5 +27,7 @@ def load_jupyter_server_extension(nb_server_app):
             (url_path_join(gcp_v1_endpoint, "datasets") + "(.*)", ListDatasets),
             (url_path_join(gcp_v1_endpoint, "models") + "(.*)", ListModels),
             (url_path_join(gcp_v1_endpoint, "tableInfo") + "(.*)", ListTableInfo),
+            (url_path_join(gcp_v1_endpoint, "deleteDataset") + "(.*)", DeleteDataset),
+            (url_path_join(gcp_v1_endpoint, "deleteModel") + "(.*)", DeleteModel),
         ],
     )

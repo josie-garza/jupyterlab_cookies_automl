@@ -57,4 +57,21 @@ export abstract class DatasetService {
       throw err;
     }
   };
+
+  static async deleteDataset(datasetId: string): Promise<void> {
+    try {
+      const body = {
+        'datasetId': datasetId,
+      }
+      const requestInit: RequestInit = {
+        body: JSON.stringify(body),
+        method: "POST",
+      };
+      console.log("deleteing dataset")
+      await requestAPI('v1/deleteDataset', requestInit);
+      console.log("deleted..")
+    } catch (err) {
+      throw err;
+    }
+  };
 }

@@ -26,4 +26,19 @@ export abstract class ModelService {
       throw err;
     }
   };
+
+  static async deleteModel(modelId: string): Promise<void> {
+    try {
+      const body = {
+        'modelId': modelId,
+      }
+      const requestInit: RequestInit = {
+        body: JSON.stringify(body),
+        method: "POST",
+      };
+      await requestAPI('v1/deleteModel', requestInit);
+    } catch (err) {
+      throw err;
+    }
+  };
 }

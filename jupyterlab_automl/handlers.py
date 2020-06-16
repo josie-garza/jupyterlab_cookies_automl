@@ -201,3 +201,43 @@ class ListTableInfo(APIHandler):
             app_log.exception(str(e))
             self.set_status(500, str(e))
             self.finish({"error": {"message": str(e)}})
+
+
+class DeleteDataset(APIHandler):
+    """ Handles deleteing a dataset in GCP."""
+
+    automl_client = None
+
+    @gen.coroutine
+    def post(self, input=""):
+        datasetId = self.get_json_body()["datasetId"]
+        try:
+            if not self.automl_client:
+                self.automl_client = create_automl_client()
+            self.automl_client.delete_dataset(datasetId)
+            self.finish({"success": {"message": "dataset deleted"}})
+
+        except Exception as e:
+            app_log.exception(str(e))
+            self.set_status(500, str(e))
+            self.finish({"error": {"message": str(e)}})
+
+
+class DeleteModel(APIHandler):
+    """ Handles deleteing a model in GCP."""
+
+    automl_client = None
+
+    @gen.coroutine
+    def post(self, input=""):
+        modelId = self.get_json_body()["modelId"]
+        try:
+            if not self.automl_client:
+                self.automl_client = create_automl_client()
+            self.automl_client.delete_model(modelId)
+            self.finish({"success": {"message": "model deleted"}})
+
+        except Exception as e:
+            app_log.exception(str(e))
+            self.set_status(500, str(e))
+            self.finish({"error": {"message": str(e)}})
