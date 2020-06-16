@@ -2,14 +2,14 @@
   "$schema": "http://json-schema.org/schema#",
   "jupyter.lab.setting-icon-class": "jp-AutoMLIcon",
   "jupyter.lab.setting-icon-label": "AutoML",
-  "title": "AutoML Project",
-  "description": "Cookie Cutter Project",
+  "title": "AutoML",
+  "description": "AutoML extension for JupterLab",
   "type": "object",
   "properties": {
     "projectId": {
       "type": "string",
-      "title": "Notebook AutoML",
-      "description": "Cookie Cutter Project"
+      "title": "AutoML",
+      "description": "AutoML extension for JupterLab"
     }
   }
 }

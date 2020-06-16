@@ -1,7 +1,7 @@
 import { ReactWidget } from '@jupyterlab/apputils';
 import * as React from 'react';
-import { Dataset } from "../service/dataset"
-import { GridComponent } from "./dataset_grid"
+import { Dataset } from '../service/dataset';
+import { GridComponent } from './dataset_grid';
 
 interface Props {
   dataset: Dataset;
@@ -10,7 +10,6 @@ interface Props {
 interface State {
   hasLoaded: boolean;
   isLoading: boolean;
-  data: any;
 }
 
 export class DatasetPanel extends React.Component<Props, State> {
@@ -19,16 +18,11 @@ export class DatasetPanel extends React.Component<Props, State> {
     this.state = {
       hasLoaded: false,
       isLoading: false,
-      data: null,
     };
   }
 
   render() {
-    return (
-      <GridComponent
-        id={this.props.dataset.id}
-      />
-    );
+    return <GridComponent id={this.props.dataset.id} />;
   }
 }
 
@@ -41,12 +35,11 @@ export class DatasetWidget extends ReactWidget {
     this.title.label = datasetMeta.displayName;
     this.title.caption = 'AutoML Dataset';
     this.title.closable = true;
-    this.title.iconClass = 'jp-Icon jp-Icon-20 jp-AutoMLIcon-'+ datasetMeta.datasetType;
+    this.title.iconClass =
+      'jp-Icon jp-Icon-20 jp-AutoMLIcon-' + datasetMeta.datasetType;
   }
 
   render() {
-    return (
-      <DatasetPanel dataset={this.datasetMeta}></DatasetPanel>
-    );
+    return <DatasetPanel dataset={this.datasetMeta}></DatasetPanel>;
   }
 }

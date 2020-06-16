@@ -114,6 +114,7 @@ def get_datasets(client, parent):
                 "exampleCount": dataset.example_count,
                 "metadata": metadata,
                 "datasetType": dataset_type,
+                "test": 12345
         })
     return {
         "datasets": datasets
