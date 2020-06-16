@@ -1,4 +1,4 @@
-import { Box, Icon, IconButton, ListItem, MenuItem, Select, Toolbar } from '@material-ui/core';
+import { Box, Icon, IconButton, ListItem, MenuItem, Select, Toolbar, InputBase } from '@material-ui/core';
 import blue from '@material-ui/core/colors/blue';
 import orange from '@material-ui/core/colors/orange';
 import * as React from 'react';
@@ -25,14 +25,14 @@ interface State {
     datasets: Dataset[];
     models: Model[];
     resourceType: ResourceType;
-    showSearch: boolean;
+    searchString: string;
 }
 
 const styles: { [key: string]: React.CSSProperties } = {
     toolbar: {
         paddingLeft: 16,
         paddingRight: 16,
-        minHeight: 40
+        minHeight: 0,
     },
     select: {
         fontSize: 'var(--jp-ui-font-size0)',
@@ -44,6 +44,12 @@ const styles: { [key: string]: React.CSSProperties } = {
     },
     icon: {
         fontSize: 20
+    },
+    searchBar: {
+        fontSize: 'var(--jp-ui-font-size0)',
+        paddingTop: 0,
+        marginBottom: 4,
+        width: "100%"
     }
 };
 
@@ -59,7 +65,7 @@ export class ListResourcesPanel extends React.Component<Props, State> {
             datasets: [],
             models: [],
             resourceType: ResourceType.Dataset,
-            showSearch: false,
+            searchString: ""
         };
     }
 
@@ -87,7 +93,7 @@ export class ListResourcesPanel extends React.Component<Props, State> {
         // TODO: Make styles separate
         return <>
             <Box height={1} width={1} bgcolor={'white'} borderRadius={0}>
-                <Toolbar variant='dense' style={styles.toolbar}>
+                <Toolbar variant='dense' style={{ ...styles.toolbar, minHeight: 40 }}>
                     <Select
                         disabled={this.state.isLoading}
                         style={styles.select}
@@ -98,14 +104,20 @@ export class ListResourcesPanel extends React.Component<Props, State> {
                         <MenuItem style={styles.selectItem} value={ResourceType.Model}>Models</MenuItem>
                     </Select>
                     <Box flexGrow={1}></Box>
-                    <IconButton disabled={this.state.isLoading} size="small">
+                    <IconButton disabled={this.state.isLoading} style={styles.icon} size="small">
                         <Icon>add</Icon>
                     </IconButton>
                     <IconButton disabled={this.state.isLoading} size="small" onClick={(_) => { this.refresh() }}>
                         <Icon>refresh</Icon>
                     </IconButton>
                 </Toolbar>
-
+                <Toolbar variant='dense' style={styles.toolbar}>
+                    <InputBase style={styles.searchBar} placeholder="Search" type="search"
+                        onChange={(event) => {
+                            this.setState({searchString: event.target.value})
+                        }}
+                    />
+                </Toolbar>
                 {(this.state.resourceType == ResourceType.Dataset) ? (
                     <ListResourcesTable
                         columns={[
@@ -131,7 +143,7 @@ export class ListResourcesPanel extends React.Component<Props, State> {
                                 minShowWidth: breakpoints[0]
                             }
                         ]}
-                        data={this.state.datasets}
+                        data={this.filterResources<Dataset>(this.state.datasets)}
                         onRowClick={(rowData) => { this.props.context.manager.launchWidgetForId(rowData.id, rowData) }}
                         isLoading={this.state.isLoading}
                         height={this.props.height - 88}
@@ -154,7 +166,7 @@ export class ListResourcesPanel extends React.Component<Props, State> {
                                     minShowWidth: breakpoints[0]
                                 }
                             ]}
-                            data={this.state.models}
+                            data={this.filterResources<Model>(this.state.models)}
                             onRowClick={(rowData) => { this.props.context.manager.launchWidgetForId(rowData.id, rowData) }}
                             isLoading={this.state.isLoading}
                             height={this.props.height - 88}
@@ -185,6 +197,31 @@ export class ListResourcesPanel extends React.Component<Props, State> {
                 {icons[datasetType].icon}
             </Icon>
         </ListItem>
+    }
+
+    private filterResources<T>(resources: T[]): T[] {
+        const searchFields = {
+            displayName: true,
+            updateTime: true,
+            createTime: true,
+            datasetType: true
+        }
+        return resources.filter(x=>{
+            if (!this.state.searchString) return true;   
+            const obj = (x as {[k : string]: any});
+            for (let key in x) {
+                if (!(key in searchFields)) continue;
+                if (typeof obj[key] == "string" && (obj[key] as string).toLowerCase().includes(this.state.searchString.toLowerCase())) {
+                    console.log(obj[key], this.state.searchString.toLowerCase());
+                    return true;
+                }
+                if (obj[key] instanceof Date && (obj[key] as Date).toLocaleString().toLowerCase().includes(this.state.searchString.toLowerCase())) {
+                    console.log((obj[key] as Date).toLocaleString().toLowerCase(), this.state.searchString.toLowerCase())
+                    return true;
+                }
+            }
+            return false;
+        });
     }
 
     private selectType(type: ResourceType) {

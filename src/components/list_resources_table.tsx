@@ -14,9 +14,9 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-import MaterialTable, { Icons } from 'material-table';
+import MaterialTable, { Icons, MTableBodyRow } from 'material-table';
 import React, { forwardRef } from 'react';
-
+import { LinearProgress, Box } from '@material-ui/core';
 
 
 const tableIcons: Icons = {
@@ -57,6 +57,8 @@ export interface ResourceColumn {
     render?: (rowData: any) => JSX.Element;
     fixedWidth?: number;
     sorting?: boolean;
+    lookup?: { [k: string]: string };
+    filtering?: boolean;
 }
 
 interface Props {
@@ -71,7 +73,8 @@ interface Props {
 const style: CSSProperties = {
     table: {
         borderRadius: 0,
-        boxShadow: 'none'
+        boxShadow: 'none',
+        borderTop: '1px solid var(--jp-border-color2)'
     },
     tableCell: {
         fontSize: 'var(--jp-ui-font-size1)',
@@ -84,7 +87,6 @@ const style: CSSProperties = {
         fontSize: 'var(--jp-ui-font-size1)',
         whiteSpace: 'nowrap',
         padding: "0px 8px",
-        borderTop: '1px solid var(--jp-border-color2)'
     },
     tableRow: {
         overflow: 'hidden',
@@ -112,7 +114,9 @@ export class ListResourcesTable extends React.PureComponent<Props> {
                         headerStyle: col.rightAlign ? this.rightAlign(style.headerCell) : style.headerCell,
                         hidden: (this.props.width < col.minShowWidth),
                         width: col.fixedWidth,
-                        sorting: (col.sorting === undefined) ? true : col.sorting
+                        sorting: (col.sorting === undefined) ? true : col.sorting,
+                        filtering: (col.filtering === undefined)? false : col.filtering,
+                        lookup: col.lookup
                     };
                 })}
             data={this.props.data}
@@ -127,7 +131,7 @@ export class ListResourcesTable extends React.PureComponent<Props> {
                 toolbar: false,
                 rowStyle: style.tableRow,
                 minBodyHeight: this.props.height, //TODO Get this number programmatically
-                maxBodyHeight: this.props.height
+                maxBodyHeight: this.props.height,
             }}
             style={style.table}
             isLoading={this.props.isLoading}
@@ -135,6 +139,13 @@ export class ListResourcesTable extends React.PureComponent<Props> {
                 if (this.props.onRowClick) {
                     this.props.onRowClick(rowData)
                 }
+            }}
+            components={{
+                OverlayLoading: props =>
+                    <Box width={1} height={1} bgcolor="rgba(255,255,255,0.5)">
+                        <LinearProgress></LinearProgress>
+                    </Box>,
+                Row: props => <MTableBodyRow {...props}></MTableBodyRow>
             }}
         />;
     }
