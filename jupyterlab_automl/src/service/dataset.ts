@@ -1,5 +1,14 @@
 import { requestAPI } from './api_request';
 
+export type ColumnType =
+  | 'Numerical'
+  | 'Categorical'
+  | 'Array'
+  | 'Timestamp'
+  | 'String'
+  | 'Struct'
+  | 'Unspecified'
+  | 'Unrecognized';
 export type DatasetType = 'tables' | 'image_classification' | 'other';
 export interface Dataset {
   id: string; // Resource name of dataset
@@ -15,6 +24,11 @@ export interface ColumnSpec {
   id: string;
   dataType: string;
   displayName: string;
+  distinctValueCount: number;
+  invalidValueCount: number;
+  nullValueCount: string;
+  nullable: boolean;
+  chartInfo: any;
 }
 
 export interface TableSpec {
@@ -23,6 +37,7 @@ export interface TableSpec {
   validRowCount: number;
   columnCount: number;
   columnSpecs: ColumnSpec[];
+  chartSummary: any[];
 }
 
 export interface TableInfo {

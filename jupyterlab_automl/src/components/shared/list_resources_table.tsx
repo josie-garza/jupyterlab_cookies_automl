@@ -94,7 +94,7 @@ interface Props {
   onRowClick?: (rowData: any) => void;
 }
 
-const style: CSSProperties = {
+export const style: CSSProperties = {
   table: {
     borderRadius: 0,
     boxShadow: 'none',
