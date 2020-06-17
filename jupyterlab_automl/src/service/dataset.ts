@@ -20,7 +20,7 @@ export interface ColumnSpec {
   invalidValueCount: number;
   nullValueCount: string;
   nullable: boolean;
-  chartInfo: any;
+  detailPanel: any;
 }
 
 export interface TableSpec {

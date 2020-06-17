@@ -1,30 +1,7 @@
 import { ReactWidget } from '@jupyterlab/apputils';
 import * as React from 'react';
 import { Dataset } from '../service/dataset';
-import { GridComponent } from './dataset_grid';
-
-interface Props {
-  dataset: Dataset;
-}
-
-interface State {
-  hasLoaded: boolean;
-  isLoading: boolean;
-}
-
-export class DatasetPanel extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      hasLoaded: false,
-      isLoading: false,
-    };
-  }
-
-  render() {
-    return <GridComponent dataset={this.props.dataset} />;
-  }
-}
+import { DatasetComponent } from './dataset_grid';
 
 /** Widget to be registered in the left-side panel. */
 export class DatasetWidget extends ReactWidget {
@@ -40,6 +17,6 @@ export class DatasetWidget extends ReactWidget {
   }
 
   render() {
-    return <DatasetPanel dataset={this.datasetMeta}></DatasetPanel>;
+    return <DatasetComponent dataset={this.datasetMeta}></DatasetComponent>;
   }
 }

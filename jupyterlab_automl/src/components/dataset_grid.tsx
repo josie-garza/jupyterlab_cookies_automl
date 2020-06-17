@@ -1,14 +1,21 @@
-import { LinearProgress } from '@material-ui/core';
+import { Paper, Box, Grid, LinearProgress } from '@material-ui/core';
 import * as csstips from 'csstips';
 import * as React from 'react';
 import { stylesheet } from 'typestyle';
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
 import MaterialTable from 'material-table';
 import { DatasetService, TableSpec, Dataset } from '../service/dataset';
 import { style, ColumnType } from './list_resources_table';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, PieChart, Pie } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, PieChart, Pie, Cell } from 'recharts';
 
+
+interface DetailPanelProps {
+    dataType: string;
+    chartInfo: any[];
+}
+
+interface SummaryProps {
+    tableSpec: TableSpec;
+}
 
 interface Props {
     dataset: Dataset;
@@ -50,8 +57,163 @@ const localStyles = stylesheet({
     },
 });
 
+const columns = [
+    {
+        title: 'Column name',
+        field: 'displayName',
+        type: ColumnType.String,
+    },
+    {
+        title: 'Data Type',
+        field: 'dataType',
+        type: ColumnType.String,
+    },
+    {
+        title: 'Nullable',
+        field: 'nullable',
+        type: ColumnType.Boolean,
+    },
+    {
+        title: 'Missing Values (%)',
+        field: 'nullValueCount',
+        type: ColumnType.String,
+    },
+    {
+        title: 'Invalid Values',
+        field: 'invalidValueCount',
+        type: ColumnType.Numeric,
+    },
+    {
+        title: 'Distinct Value Count',
+        field: 'distinctValueCount',
+        type: ColumnType.Numeric,
+    },
+]
 
-export class GridComponent extends React.Component<Props, State> {
+export class DatasetSummary extends React.Component<SummaryProps> {
+    constructor(props: SummaryProps) {
+        super(props);
+    }
+
+    render() {
+        const getColor = (dataType: string) => {
+            switch (dataType) {
+                case "Numeric": {
+                    return '#4285F4'
+                }
+                case "Categorical": {
+                    return '#34A853'
+                }
+                case "Timestamp": {
+                    return '#9C39F8'
+                }
+                default: {
+                    return '#DC3912'
+                }
+            }
+        }
+        return (
+            <Grid item xs={4}>
+                <Paper square={true} elevation={3} className={localStyles.paper}>
+                    <Box component="div" overflow="auto">
+                        <b>Summary</b>
+                        <p>Total Columns: {this.props.tableSpec.columnCount}</p>
+                        <p>Total Rows:  {this.props.tableSpec.rowCount}</p>
+                        <BarChart
+                            width={300}
+                            height={30 + (30 * this.props.tableSpec.chartSummary.length)}
+                            data={this.props.tableSpec.chartSummary}
+                            layout="vertical"
+                            margin={{
+                                top: 5, right: 30, left: 20, bottom: 5,
+                            }}
+                        >
+                            <YAxis type="category" dataKey="name" tickLine={false} tick={{ fill: 'black' }} />
+                            <XAxis type="number" tickCount={3} tick={{ fill: 'black' }} />
+                            <Tooltip />
+                            <Bar dataKey="Number of Instances">{
+                                this.props.tableSpec.chartSummary.map(item =>
+                                    <Cell key={item.name} fill={getColor(item.name)} />
+                                )
+                            }</Bar>
+                        </BarChart>
+                    </Box>
+                </Paper>
+            </Grid >
+        )
+    }
+}
+
+export class DetailPanel extends React.Component<DetailPanelProps>{
+    constructor(props: DetailPanelProps) {
+        super(props);
+    }
+
+    render() {
+        if (this.props.dataType === "Numeric") {
+            return (
+                <div style={{
+                    padding: '15px'
+                }} >
+                    <p>Mean: {this.props.chartInfo[1]}</p>
+                    <p>Standard Deviation: {this.props.chartInfo[2]}</p>
+                    <div style={{
+                        paddingTop: '15px'
+                    }}>
+                        <b>Distribution</b>
+                        <BarChart
+                            width={300}
+                            height={180}
+                            data={this.props.chartInfo[0]}
+                            margin={{
+                                top: 20, right: 5, left: 5, bottom: 20,
+                            }}
+                        >
+                            <XAxis dataKey="name" hide={true} />
+                            <YAxis tick={{ fill: 'black' }} label={{ value: 'Number of Instances', angle: -90, position: 'insideBottomLeft' }} />
+                            <Tooltip />
+                            <Bar dataKey="Number of Instances" fill="#3366CC" />
+                        </BarChart>
+                    </div>
+                </div>
+            )
+        }
+        else if (this.props.dataType === "Categorical") {
+            const COLORS = ['#3366CC', '#DC3912', '#FF9900', '#109618', '#990099', '#0099C6'];
+            const RADIAN = Math.PI / 180;
+            const renderCustomizedLabel = ({
+                cx, cy, midAngle, innerRadius, outerRadius, percent, index,
+            }) => {
+                const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+                const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+                return (
+                    <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+                        {`${(percent * 100).toFixed(0)}%`}
+                    </text>
+                );
+            };
+            return (
+                <div style={{
+                    padding: '15px'
+                }} >
+                    <b>Distribution</b>
+                    <PieChart width={400} height={200}>
+                        <Pie dataKey="Number of Instances" isAnimationActive={false} labelLine={false}
+                            label={renderCustomizedLabel} data={this.props.chartInfo} cx={125} cy={100} innerRadius={25} outerRadius={90} fill="#3366CC">{
+                                this.props.chartInfo.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)
+                            }</Pie>
+                        <Tooltip />
+                        <Legend layout={'vertical'} verticalAlign={"middle"} align={"right"} />
+                    </PieChart>
+                </div>
+            )
+        }
+    }
+}
+
+export class DatasetComponent extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
@@ -67,39 +229,6 @@ export class GridComponent extends React.Component<Props, State> {
 
     render() {
         const { isLoading, tableSpecs } = this.state;
-        const columns = [
-            {
-                title: 'Column name',
-                field: 'displayName',
-                type: 'string',
-            },
-            {
-                title: 'Data Type',
-                field: 'dataType',
-                type: 'string',
-            },
-            {
-                title: 'Nullable',
-                field: 'nullable',
-                type: ColumnType.Boolean,
-            },
-            {
-                title: 'Missing Values (%)',
-                field: 'nullValueCount',
-                type: 'string',
-            },
-            {
-                title: 'Invalid Values',
-                field: 'invalidValueCount',
-                type: ColumnType.Numeric,
-            },
-            {
-                title: 'Distinct Value Count',
-                field: 'distinctValueCount',
-                type: ColumnType.Numeric,
-            },
-        ]
-
         return (
             <div className={localStyles.panel}>
                 <header className={localStyles.header}>{this.props.dataset.displayName}</header>
@@ -112,27 +241,7 @@ export class GridComponent extends React.Component<Props, State> {
                             {tableSpecs.map(tableSpec => (
                                 <div key={tableSpec.id} className={localStyles.root}>
                                     <Grid container spacing={3} direction="column">
-                                        <Grid item xs={6}>
-                                            <Paper square={true} elevation={3} className={localStyles.paper}>
-                                                <b>Summary</b>
-                                                <p>Total Columns: {tableSpec.columnCount}</p>
-                                                <p>Total Rows:  {tableSpec.rowCount}</p>
-                                                <BarChart
-                                                    width={500}
-                                                    height={90}
-                                                    data={tableSpec.chartSummary}
-                                                    layout="vertical"
-                                                    margin={{
-                                                        top: 5, right: 30, left: 20, bottom: 5,
-                                                    }}
-                                                >
-                                                    <YAxis type="category" dataKey="name" />
-                                                    <XAxis type="number"/>
-                                                    <Tooltip />
-                                                    <Bar dataKey="amount" fill="#3366CC" />
-                                                </BarChart>
-                                            </Paper>
-                                        </Grid>
+                                        <DatasetSummary tableSpec={tableSpec} />
                                         <Grid item xs={12}>
                                             <Paper square={true} elevation={3} className={localStyles.paper}>
                                                 <MaterialTable
@@ -159,39 +268,14 @@ export class GridComponent extends React.Component<Props, State> {
                                                     }}
                                                     style={style.table}
                                                     isLoading={this.state.isLoading}
-                                                    detailPanel={rowData => {
-                                                        if (rowData.dataType === 'Numeric') {
-                                                            const chartInfo = tableSpec.columnSpecs.filter(columnSpec => columnSpec.id == rowData.id)[0].chartInfo
-                                                            return (
-                                                                <div>
-                                                                    <p>Mean: {chartInfo[0]}</p>
-                                                                    <p>Standard Deviation: {chartInfo[1]}</p>
-                                                                    <BarChart
-                                                                        width={500}
-                                                                        height={300}
-                                                                        data={chartInfo[2]}
-                                                                        margin={{
-                                                                            top: 5, right: 30, left: 20, bottom: 5,
-                                                                        }}
-                                                                    >
-                                                                        <XAxis dataKey="name" />
-                                                                        <YAxis />
-                                                                        <Tooltip />
-                                                                        <Bar dataKey="amount" fill="#3366CC" />
-                                                                    </BarChart>
-                                                                </div>)
-                                                        }
-                                                        else if (rowData.dataType === 'Categorical') {
-                                                            const chartInfo = tableSpec.columnSpecs.filter(columnSpec => columnSpec.id == rowData.id)[0].chartInfo
-                                                            return (
-                                                                <div>
-                                                                    <PieChart width={400} height={400}>
-                                                                        <Pie dataKey="amount" isAnimationActive={false} data={chartInfo} cx={200} cy={200} outerRadius={80} fill="#3366CC" label />
-                                                                        <Tooltip />
-                                                                    </PieChart>
-                                                                </div>)
-                                                        }
-                                                    }}
+                                                    detailPanel={[
+                                                        {
+                                                            render: rowData => {
+                                                                return (<DetailPanel dataType={rowData.dataType} chartInfo={tableSpec.columnSpecs.filter(columnSpec => columnSpec.id == rowData.id)[0].detailPanel} />)
+
+                                                            },
+                                                        },
+                                                    ]}
                                                     onRowClick={(event, rowData, togglePanel) => togglePanel()}
                                                 />
                                             </Paper>

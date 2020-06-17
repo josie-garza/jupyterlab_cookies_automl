@@ -103,6 +103,7 @@ class TestAutoMLExtension(unittest.TestCase):
 
     def testListTableSpecs(self):
         dummy_type = DataType(type_code=3)
+        dummy_type = DataType(type_code=10)
         gcp_column_specs = [
             ColumnSpec(
                 name="dummy_column1", data_type=dummy_type, display_name="column1",
@@ -122,8 +123,8 @@ class TestAutoMLExtension(unittest.TestCase):
         mock_client.list_column_specs = MagicMock(return_value=gcp_column_specs)
 
         wanted_column = [
-            {"id": "dummy_column1", "dataType": 3, "displayName": "column1",},
-            {"id": "dummy_column2", "dataType": 3, "displayName": "column2",},
+            {"id": "dummy_column1", "dataType": "Numeric", "displayName": "column1",},
+            {"id": "dummy_column2", "dataType": "Categorical", "displayName": "column2",},
         ]
 
         wanted_table = {
@@ -138,7 +139,11 @@ class TestAutoMLExtension(unittest.TestCase):
             ]
         }
 
-        got_column = handlers.get_column_specs(mock_client, "dummy_table1")
+        got_column = handlers.get_column_specs(mock_client, gcp_table_specs[0])
+        print("wanted")
+        print(wanted_column)
+        print("got")
+        print(got_column)
         self.assertEqual(wanted_column, got_column)
         got_table = handlers.get_table_specs(mock_client, "datasetId")
         self.assertEqual(wanted_table, got_table)

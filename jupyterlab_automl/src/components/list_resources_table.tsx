@@ -45,7 +45,8 @@ export enum ColumnType {
     Numeric = 'numeric',
     Date = 'date',
     DateTime = 'datetime',
-    Currency = 'currency'
+    Currency = 'currency',
+    String = 'string',
 }
 
 export interface ResourceColumn {
