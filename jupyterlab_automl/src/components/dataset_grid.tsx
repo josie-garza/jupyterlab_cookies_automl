@@ -6,7 +6,7 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import MaterialTable from 'material-table';
 import { DatasetService, TableSpec, Dataset } from '../service/dataset';
-import { style, ColumnType } from './list_resources_table';
+import { style, ColumnType } from './shared/list_resources_table';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, PieChart, Pie } from 'recharts';
 
 
