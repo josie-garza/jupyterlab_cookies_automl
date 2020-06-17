@@ -188,7 +188,7 @@ export class ListResourcesPanel extends React.Component<Props, State> {
                 );
               }}
               isLoading={this.state.isLoading}
-              height={this.props.height - 88}
+              height={this.props.height - 80}
               width={this.props.width}
             />
           ) : (

@@ -15,9 +15,8 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-import MaterialTable, { Icons, MTableBodyRow } from 'material-table';
+import MaterialTable, { Icons } from 'material-table';
 import React, { forwardRef } from 'react';
-import { LinearProgress, Box } from '@material-ui/core';
 
 const tableIcons: Icons = {
   Add: forwardRef((props: any, ref: any) => <AddBox {...props} ref={ref} />),
@@ -150,15 +149,15 @@ export class ListResourcesTable extends React.PureComponent<Props> {
         options={{
           showTitle: false,
           tableLayout: 'fixed',
-          pageSize: 20,
+          pageSize: Math.min(20, this.props.data.length),
           pageSizeOptions: [20],
           search: false,
           sorting: true,
           padding: 'dense',
           toolbar: false,
           rowStyle: style.tableRow,
-          minBodyHeight: this.props.height, //TODO Get this number programmatically
-          maxBodyHeight: this.props.height,
+          minBodyHeight: this.props.height - 52,
+          maxBodyHeight: this.props.height - 52,
         }}
         style={style.table}
         isLoading={this.props.isLoading}
@@ -166,14 +165,6 @@ export class ListResourcesTable extends React.PureComponent<Props> {
           if (this.props.onRowClick) {
             this.props.onRowClick(rowData);
           }
-        }}
-        components={{
-          OverlayLoading: () => (
-            <Box width={1} height={1} bgcolor="rgba(255,255,255,0.5)">
-              <LinearProgress></LinearProgress>
-            </Box>
-          ),
-          Row: props => <MTableBodyRow {...props}></MTableBodyRow>,
         }}
       />
     );
