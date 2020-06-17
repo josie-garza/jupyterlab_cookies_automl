@@ -7,8 +7,8 @@ import { WidgetManager } from '../widget_manager';
 import { ListResourcesPanel } from './list_resources_panel';
 
 export interface Context {
-  app: JupyterFrontEnd,
-  manager: WidgetManager
+  app: JupyterFrontEnd;
+  manager: WidgetManager;
 }
 
 interface ResizeOrVisible {
@@ -33,13 +33,19 @@ export class AutoMLWidget extends ReactWidget {
     this.visibleSignal.connect(this.updateSizeVisible);
   }
 
-  private updateSizeVisible(sender: AutoMLWidget, event: Widget.ResizeMessage | boolean) {
-    if (typeof event == "boolean") {
+  private updateSizeVisible(
+    sender: AutoMLWidget,
+    event: Widget.ResizeMessage | boolean
+  ) {
+    if (typeof event === 'boolean') {
       sender._isVisible = event;
     } else {
       sender._currSize = event;
     }
-    sender.resizeVisibleSignal.emit({ visible: sender._isVisible, resize: sender._currSize });
+    sender.resizeVisibleSignal.emit({
+      visible: sender._isVisible,
+      resize: sender._currSize,
+    });
   }
 
   onAfterHide() {
@@ -58,8 +64,8 @@ export class AutoMLWidget extends ReactWidget {
     return (
       <UseSignal signal={this.resizeVisibleSignal}>
         {(_, event: ResizeOrVisible) => {
-          const w = (event) ? event.resize.width : 0;
-          const h = (event) ? event.resize.height : 0;
+          const w = event ? event.resize.width : 0;
+          const h = event ? event.resize.height : 0;
           return (
             <ListResourcesPanel
               isVisible={this.isVisible}
@@ -67,7 +73,7 @@ export class AutoMLWidget extends ReactWidget {
               height={h}
               context={this.context}
             />
-          )
+          );
         }}
       </UseSignal>
     );

@@ -2,17 +2,18 @@ import { ReactWidget, MainAreaWidget } from '@jupyterlab/apputils';
 import { JupyterFrontEnd } from '@jupyterlab/application';
 
 /**
-* A class that manages dataset widget instances in the Main area
-*/
+ * A class that manages dataset widget instances in the Main area
+ */
 export class WidgetManager {
-
   private widgets: { [id: string]: MainAreaWidget } = {};
 
-  constructor(private widgetType: new (...args: any[]) => ReactWidget,
-    private app: JupyterFrontEnd) { }
+  constructor(
+    private widgetType: new (...args: any[]) => ReactWidget,
+    private app: JupyterFrontEnd
+  ) {}
 
   launchWidgetForId(id: string, ...args: any[]) {
-    // Get the widget associated with a dataset/resource id, or create one 
+    // Get the widget associated with a dataset/resource id, or create one
     // if it doesn't exist yet and activate it
     let widget = this.widgets[id];
     if (!widget || widget.isDisposed) {

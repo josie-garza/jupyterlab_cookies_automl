@@ -7,7 +7,7 @@ import {
 } from '@jupyterlab/application';
 
 import { AutoMLWidget } from './components/automl_widget';
-import { DatasetWidget } from './components/dataset_widget';
+import { DatasetWidget } from './components/table_widget';
 import { WidgetManager } from './widget_manager';
 
 async function activate(app: JupyterFrontEnd) {
