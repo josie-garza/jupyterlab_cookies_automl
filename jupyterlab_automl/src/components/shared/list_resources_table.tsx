@@ -149,7 +149,7 @@ export class ListResourcesTable extends React.PureComponent<Props> {
         options={{
           showTitle: false,
           tableLayout: 'fixed',
-          pageSize: Math.min(20, this.props.data.length),
+          pageSize: 20,
           pageSizeOptions: [20],
           search: false,
           sorting: true,
