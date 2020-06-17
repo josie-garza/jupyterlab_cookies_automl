@@ -22,7 +22,7 @@ export class DatasetPanel extends React.Component<Props, State> {
   }
 
   render() {
-    return <GridComponent id={this.props.dataset.id} />;
+    return <GridComponent dataset={this.props.dataset} />;
   }
 }
 

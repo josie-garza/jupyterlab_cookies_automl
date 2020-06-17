@@ -52,6 +52,7 @@
     "@types/react": "^16.9.35",
     "csstips": "^1.2.0",
     "material-table": "^1.59.0",
+    "recharts": "^1.8.5",
     "typestyle": "^2.0.4"
   },
   "devDependencies": {
