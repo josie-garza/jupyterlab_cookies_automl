@@ -10,4 +10,4 @@ python_version = "3.7"
 jupyterlab = "==1.2.15" # https://github.com/jupyterlab/jupyterlab/issues/8515
 
 [dev-packages]
-
+pylint = "*"
