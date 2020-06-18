@@ -79,7 +79,7 @@ def get_bucket_label(bucket):
         return "[" + str(round(bucket.min)) + ", " + str(round(bucket.max)) + "]"
 
 
-def get_detail_panel(column_spec):
+def get_detail_panel(column_spec, count):
     chart_data = []
     if column_spec.data_type.type_code == 3:
         mean = round(column_spec.data_stats.float64_stats.mean, 2)
@@ -90,9 +90,15 @@ def get_detail_panel(column_spec):
             )
         return [chart_data, mean, standard_deviation]
     elif column_spec.data_type.type_code == 10:
+        try:
+            div = column_spec.data_stats.category_stats.top_category_stats[0].count / count
+            rounded = round(div * 100, 3)
+            most_common = column_spec.data_stats.category_stats.top_category_stats[0].value + " (" + str(rounded) + "%)"
+        except:
+            most_common = ""
         for stat in column_spec.data_stats.category_stats.top_category_stats:
             chart_data.append({"name": stat.value, "Number of Instances": stat.count})
-        return chart_data
+        return[chart_data, most_common]
     else:
         return []
 
@@ -105,7 +111,7 @@ def get_column_specs(client, table_spec):
             type_code = column_types[column_spec.data_type.type_code]
         else:
             type_code = "Unrecognized"
-        detail_panel = get_detail_panel(column_spec)
+        detail_panel = get_detail_panel(column_spec, table_spec.row_count - column_spec.data_stats.null_value_count)
         type_summary[type_code] += 1
         column_specs.append(
             {

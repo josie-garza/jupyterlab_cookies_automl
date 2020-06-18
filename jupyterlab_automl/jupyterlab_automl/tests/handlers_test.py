@@ -200,6 +200,11 @@ class TestAutoMLExtension(unittest.TestCase):
         mock_client.list_table_specs = MagicMock(return_value=gcp_table_specs)
         mock_client.list_column_specs = MagicMock(return_value=gcp_column_specs)
 
+        chart_info = [
+            {"name": "Test1", "Number of Instances": 2},
+            {"name": "Test2", "Number of Instances": 1},
+        ]
+
         wanted_column = (
             [
                 {
@@ -210,10 +215,7 @@ class TestAutoMLExtension(unittest.TestCase):
                     "invalidValueCount": 2,
                     "nullValueCount": "1 (25%)",
                     "nullable": False,
-                    "detailPanel": [
-                        {"name": "Test1", "Number of Instances": 2},
-                        {"name": "Test2", "Number of Instances": 1},
-                    ],
+                    "detailPanel": [chart_info, "Test1 (66.667%)"],
                 },
             ],
             [{"name": "Categorical", "Number of Instances": 1},],

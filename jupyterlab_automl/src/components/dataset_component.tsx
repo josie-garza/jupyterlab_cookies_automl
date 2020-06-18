@@ -1,4 +1,4 @@
-import { Paper, Box, Grid, LinearProgress } from '@material-ui/core';
+import { Box, Grid, LinearProgress } from '@material-ui/core';
 import * as csstips from 'csstips';
 import * as React from 'react';
 import { stylesheet } from 'typestyle';
@@ -54,10 +54,6 @@ const localStyles = stylesheet({
     overflowY: 'scroll',
     padding: 0,
     ...csstips.flex,
-  },
-  root: {
-    flexGrow: 1,
-    padding: '16px',
   },
   paper: {
     padding: '16px',
@@ -122,40 +118,38 @@ export class DatasetSummary extends React.Component<SummaryProps> {
       }
     };
     return (
-      <Grid item xs={4}>
-        <Paper square={true} elevation={3} className={localStyles.paper}>
-          <Box component="div" overflow="auto">
-            <b>Summary</b>
-            <p>Total Columns: {this.props.tableSpec.columnCount}</p>
-            <p>Total Rows: {this.props.tableSpec.rowCount}</p>
-            <BarChart
-              width={300}
-              height={30 + 30 * this.props.tableSpec.chartSummary.length}
-              data={this.props.tableSpec.chartSummary}
-              layout="vertical"
-              margin={{
-                top: 5,
-                right: 30,
-                left: 20,
-                bottom: 5,
-              }}
-            >
-              <YAxis
-                type="category"
-                dataKey="name"
-                tickLine={false}
-                tick={{ fill: 'black' }}
-              />
-              <XAxis type="number" tickCount={3} tick={{ fill: 'black' }} />
-              <Tooltip />
-              <Bar dataKey="Number of Instances">
-                {this.props.tableSpec.chartSummary.map(item => (
-                  <Cell key={item.name} fill={getColor(item.name)} />
-                ))}
-              </Bar>
-            </BarChart>
-          </Box>
-        </Paper>
+      <Grid item xs={12}>
+        <Box component="div" overflow="auto" className={localStyles.paper}>
+          <b>Summary</b>
+          <p>Total Columns: {this.props.tableSpec.columnCount}</p>
+          <p>Total Rows: {this.props.tableSpec.rowCount}</p>
+          <BarChart
+            width={300}
+            height={30 + 30 * this.props.tableSpec.chartSummary.length}
+            data={this.props.tableSpec.chartSummary}
+            layout="vertical"
+            margin={{
+              top: 5,
+              right: 30,
+              left: 20,
+              bottom: 5,
+            }}
+          >
+            <YAxis
+              type="category"
+              dataKey="name"
+              tickLine={false}
+              tick={{ fill: 'black' }}
+            />
+            <XAxis type="number" tickCount={3} tick={{ fill: 'black' }} />
+            <Tooltip />
+            <Bar dataKey="Number of Instances">
+              {this.props.tableSpec.chartSummary.map(item => (
+                <Cell key={item.name} fill={getColor(item.name)} />
+              ))}
+            </Bar>
+          </BarChart>
+        </Box>
       </Grid>
     );
   }
@@ -164,6 +158,14 @@ export class DatasetSummary extends React.Component<SummaryProps> {
 export class DetailPanel extends React.Component<DetailPanelProps> {
   constructor(props: DetailPanelProps) {
     super(props);
+  }
+
+  renderColorfulLegendText(value) {
+    if (value.length >= 12) {
+      return <span>{value.substring(0, 11)}</span>;
+    } else {
+      return <span>{value}</span>;
+    }
   }
 
   render() {
@@ -185,7 +187,7 @@ export class DetailPanel extends React.Component<DetailPanelProps> {
                 bottom: 20,
               }}
             >
-              <XAxis dataKey="name" hide={true} />
+              <XAxis dataKey="name" interval="preserveEnd" />
               <YAxis
                 tick={{ fill: 'black' }}
                 label={{
@@ -217,58 +219,80 @@ export class DetailPanel extends React.Component<DetailPanelProps> {
         innerRadius,
         outerRadius,
         percent,
-        index,
       }) => {
         const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
         const x = cx + radius * Math.cos(-midAngle * RADIAN);
         const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-        return (
-          <text
-            x={x}
-            y={y}
-            fill="white"
-            textAnchor={x > cx ? 'start' : 'end'}
-            dominantBaseline="central"
-          >
-            {`${(percent * 100).toFixed(0)}%`}
-          </text>
-        );
+        if (percent >= 0.05) {
+          return (
+            <text
+              x={x}
+              y={y}
+              fill="white"
+              textAnchor={x > cx ? 'start' : 'end'}
+              dominantBaseline="central"
+            >
+              {`${(percent * 100).toFixed(0)}%`}
+            </text>
+          );
+        } else {
+          return (
+            <text
+              x={x}
+              y={y}
+              fill="white"
+              textAnchor={x > cx ? 'start' : 'end'}
+              dominantBaseline="central"
+            ></text>
+          );
+        }
       };
       return (
-        <div
-          style={{
-            padding: '15px',
-          }}
-        >
-          <b>Distribution</b>
-          <PieChart width={400} height={200}>
-            <Pie
-              dataKey="Number of Instances"
-              isAnimationActive={false}
-              labelLine={false}
-              label={renderCustomizedLabel}
-              data={this.props.chartInfo}
-              cx={125}
-              cy={100}
-              innerRadius={25}
-              outerRadius={90}
-              fill="#3366CC"
-            >
-              {this.props.chartInfo.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                />
-              ))}
-            </Pie>
-            <Tooltip />
-            <Legend
-              layout={'vertical'}
-              verticalAlign={'middle'}
-              align={'right'}
-            />
-          </PieChart>
+        <div style={{ padding: '15px' }}>
+          <p>Most Common: {this.props.chartInfo[1]}</p>
+          <div style={{ paddingTop: '15px' }}>
+            <b>Distribution</b>
+            <PieChart width={400} height={200}>
+              <Pie
+                dataKey="Number of Instances"
+                isAnimationActive={false}
+                labelLine={false}
+                label={renderCustomizedLabel}
+                data={this.props.chartInfo[0]}
+                cx={125}
+                cy={100}
+                innerRadius={25}
+                outerRadius={90}
+                fill="#3366CC"
+              >
+                {this.props.chartInfo[0].map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend
+                formatter={this.renderColorfulLegendText}
+                layout={'vertical'}
+                verticalAlign={'middle'}
+                height={200}
+                wrapperStyle={{
+                  overflow: 'scroll',
+                  paddingTop: '10px',
+                }}
+                align={'right'}
+              />
+            </PieChart>
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <div style={{ padding: '15px' }}>
+          <p>This data type does not have supported visualizations.</p>
         </div>
       );
     }
@@ -305,59 +329,56 @@ export class DatasetComponent extends React.Component<Props, State> {
         ) : (
           <ul className={localStyles.list}>
             {tableSpecs.map(tableSpec => (
-              <div key={tableSpec.id} className={localStyles.root}>
-                <Grid container spacing={3} direction="column">
+              <div key={tableSpec.id}>
+                <Grid container spacing={0} direction="column">
                   <DatasetSummary tableSpec={tableSpec} />
                   <Grid item xs={12}>
-                    <Paper
-                      square={true}
-                      elevation={3}
-                      className={localStyles.paper}
-                    >
-                      <MaterialTable
-                        columns={columns.map((col: any) => {
-                          return {
-                            field: col.field,
-                            title: col.title,
-                            type: col.type,
-                            // width: col.title == 'p' ? 45 : undefined,
-                            cellStyle: style.tableCell,
-                            headerStyle: style.headerCell,
-                          };
-                        })}
-                        data={tableSpec.columnSpecs}
-                        options={{
-                          showTitle: false,
-                          search: false,
-                          sorting: true,
-                          padding: 'dense',
-                          toolbar: false,
-                          paging: false,
-                          rowStyle: style.tableRow,
-                        }}
-                        style={style.table}
-                        isLoading={this.state.isLoading}
-                        detailPanel={[
-                          {
-                            render: rowData => {
-                              return (
-                                <DetailPanel
-                                  dataType={rowData.dataType}
-                                  chartInfo={
-                                    tableSpec.columnSpecs.filter(
-                                      columnSpec => columnSpec.id === rowData.id
-                                    )[0].detailPanel
-                                  }
-                                />
-                              );
-                            },
+                    <MaterialTable
+                      columns={columns.map((col: any) => {
+                        return {
+                          field: col.field,
+                          title: col.title,
+                          type: col.type,
+                          // width: col.title == 'p' ? 45 : undefined,
+                          cellStyle: {
+                            ...(style.tableCell as object),
+                            padding: '5 px 16px 5px 16px',
                           },
-                        ]}
-                        onRowClick={(event, rowData, togglePanel) =>
-                          togglePanel()
-                        }
-                      />
-                    </Paper>
+                          headerStyle: style.headerCell,
+                        };
+                      })}
+                      data={tableSpec.columnSpecs}
+                      options={{
+                        showTitle: false,
+                        search: false,
+                        sorting: true,
+                        padding: 'dense',
+                        toolbar: false,
+                        paging: false,
+                        rowStyle: style.tableRow,
+                      }}
+                      style={style.table}
+                      isLoading={this.state.isLoading}
+                      detailPanel={[
+                        {
+                          render: rowData => {
+                            return (
+                              <DetailPanel
+                                dataType={rowData.dataType}
+                                chartInfo={
+                                  tableSpec.columnSpecs.filter(
+                                    columnSpec => columnSpec.id === rowData.id
+                                  )[0].detailPanel
+                                }
+                              />
+                            );
+                          },
+                        },
+                      ]}
+                      onRowClick={(event, rowData, togglePanel) =>
+                        togglePanel()
+                      }
+                    />
                   </Grid>
                 </Grid>
               </div>
