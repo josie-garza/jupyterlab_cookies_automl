@@ -27,6 +27,31 @@ column_types = {
     10: "Categorical",
 }
 
+months = {
+    1: "Jan",
+    2: "Feb",
+    3: "Mar",
+    4: "Apr",
+    5: "May",
+    6: "Jun",
+    7: "Jul",
+    8: "Aug",
+    9: "Sep",
+    10: "Oct",
+    11: "Nov",
+    12: "Dec",
+}
+
+days = {
+    1: "Mon",
+    2: "Tue",
+    3: "Wed",
+    4: "Thu",
+    5: "Fri",
+    6: "Sat",
+    7: "Sun",
+}
+
 
 class AuthProvider:
     """Provides default GCP authentication credential."""
@@ -99,6 +124,17 @@ def get_detail_panel(column_spec, count):
         for stat in column_spec.data_stats.category_stats.top_category_stats:
             chart_data.append({"name": stat.value, "Number of Instances": stat.count})
         return[chart_data, most_common]
+    elif column_spec.data_type.type_code == 4:
+        month_chart = []
+        day_chart = []
+        time_chart = []
+        for month, amount in dict(column_spec.data_stats.timestamp_stats.granular_stats['month_of_year'].buckets).items():
+            month_chart.append({"name": months[month], "Number of Instances": amount})
+        for day, amount in dict(column_spec.data_stats.timestamp_stats.granular_stats['day_of_week'].buckets).items():
+            day_chart.append({"name": days[day], "Number of Instances": amount})
+        for hour, amount in dict(column_spec.data_stats.timestamp_stats.granular_stats['hour_of_day'].buckets).items():
+            time_chart.append({"name": str(hour) + ":00", "Number of Instances": amount})
+        return [month_chart, day_chart, time_chart]
     else:
         return []
 

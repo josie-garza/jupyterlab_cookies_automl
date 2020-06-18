@@ -289,6 +289,94 @@ export class DetailPanel extends React.Component<DetailPanelProps> {
           </div>
         </div>
       );
+    } else if (this.props.dataType === 'Timestamp') {
+      return (
+        <div style={{ padding: '15px' }}>
+          <Grid container spacing={0}>
+            <Grid item xs={4}>
+              <b>Month</b>
+              <BarChart
+                width={300}
+                height={250}
+                data={this.props.chartInfo[0]}
+                layout="vertical"
+                margin={{
+                  right: 5,
+                  left: 5,
+                }}
+              >
+                <YAxis
+                  type="category"
+                  dataKey="name"
+                  tickLine={false}
+                  tick={{ fill: 'black' }}
+                />
+                <XAxis
+                  type="number"
+                  tick={{ fill: 'black' }}
+                  interval="preserveEnd"
+                />
+                <Tooltip />
+                <Bar dataKey="Number of Instances" fill="#3366CC" />
+              </BarChart>
+            </Grid>
+            <Grid item xs={4}>
+              <b>Day of the week</b>
+              <BarChart
+                width={300}
+                height={250}
+                data={this.props.chartInfo[1]}
+                layout="vertical"
+                margin={{
+                  right: 5,
+                  left: 5,
+                }}
+              >
+                <YAxis
+                  type="category"
+                  dataKey="name"
+                  tickLine={false}
+                  tick={{ fill: 'black' }}
+                />
+                <XAxis
+                  type="number"
+                  tick={{ fill: 'black' }}
+                  interval="preserveEnd"
+                />
+                <Tooltip />
+                <Bar dataKey="Number of Instances" fill="#3366CC" />
+              </BarChart>
+            </Grid>
+            <Grid item xs={4}>
+              <b>Hour</b>
+              <BarChart
+                width={300}
+                height={250}
+                data={this.props.chartInfo[2]}
+                layout="vertical"
+                margin={{
+                  right: 5,
+                  left: 5,
+                }}
+              >
+                <YAxis
+                  type="category"
+                  dataKey="name"
+                  tickLine={false}
+                  tick={{ fill: 'black' }}
+                />
+                <XAxis
+                  type="number"
+                  tick={{ fill: 'black' }}
+                  interval="preserveEnd"
+                />
+                <Tooltip />
+                <Bar dataKey="Number of Instances" fill="#3366CC" />
+              </BarChart>
+            </Grid>
+          </Grid>
+        </div>
+      );
     } else {
       return (
         <div style={{ padding: '15px' }}>
