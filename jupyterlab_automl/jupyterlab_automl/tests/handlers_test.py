@@ -44,7 +44,7 @@ class TestAutoMLExtension(unittest.TestCase):
                     "createTime": 0,
                     "exampleCount": 9999,
                     "metadata": {"classification_type": 1,},
-                    "datasetType": "image_classification",
+                    "datasetType": "ICN",
                 },
             ]
         }

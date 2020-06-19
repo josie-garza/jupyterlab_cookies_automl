@@ -4,7 +4,7 @@ import * as React from 'react';
 import { stylesheet } from 'typestyle';
 import MaterialTable from 'material-table';
 import { DatasetService, TableSpec, Dataset } from '../service/dataset';
-import { style, ColumnType } from './list_resources_table';
+import { style, ColumnType } from './shared/list_resources_table';
 import {
   BarChart,
   Bar,
