@@ -1,7 +1,21 @@
+import { Menu, MenuItem, Portal, withStyles } from '@material-ui/core';
 import React from 'react';
-import { Menu } from '@material-ui/core';
-import { MenuItem } from '@material-ui/core';
-import { Portal } from '@material-ui/core';
+
+const ContextMenuItem = withStyles({
+  root: {
+    fontSize: 'var(--jp-ui-font-size1)',
+  },
+})(MenuItem);
+
+const ContextMenuContainer = withStyles({
+  paper: {
+    border: '1px solid var(--jp-border-color0)',
+    borderRadius: 0,
+  },
+  list: {
+    padding: 0,
+  },
+})(Menu);
 
 export interface MenuOption {
   label: string;
@@ -91,19 +105,20 @@ export class ContextMenu extends React.PureComponent<Props, State> {
       <>
         {children}
         <Portal>
-          <Menu
+          <ContextMenuContainer
+            transitionDuration={0}
             open={this.state.isOpen}
             anchorReference="anchorPosition"
             anchorPosition={{ top: this.state.mouseY, left: this.state.mouseX }}
           >
             <div ref={this.myRef}>
               {this.props.items.map(option => (
-                <MenuItem key={option.label} onClick={option.onClick}>
+                <ContextMenuItem key={option.label} onClick={option.onClick}>
                   {option.label}
-                </MenuItem>
+                </ContextMenuItem>
               ))}
             </div>
-          </Menu>
+          </ContextMenuContainer>
         </Portal>
       </>
     );
