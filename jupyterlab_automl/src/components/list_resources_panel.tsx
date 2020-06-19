@@ -1,4 +1,11 @@
-import { Box, Icon, IconButton, ListItem, Toolbar } from '@material-ui/core';
+import {
+  Modal,
+  Box,
+  Icon,
+  IconButton,
+  ListItem,
+  Toolbar,
+} from '@material-ui/core';
 import blue from '@material-ui/core/colors/blue';
 import orange from '@material-ui/core/colors/orange';
 import * as React from 'react';
@@ -29,6 +36,7 @@ interface State {
   models: Model[];
   resourceType: ResourceType;
   searchString: string;
+  modalOpen: boolean;
 }
 
 const FullWidthInput = styled(Box)`
@@ -62,6 +70,11 @@ const styles: { [key: string]: React.CSSProperties } = {
   icon: {
     fontSize: 20,
   },
+  paper: {
+    position: 'absolute',
+    width: 400,
+    border: '2px solid #000',
+  },
 };
 
 const breakpoints = [250, 380];
@@ -76,6 +89,7 @@ export class ListResourcesPanel extends React.Component<Props, State> {
       models: [],
       resourceType: ResourceType.Dataset,
       searchString: '',
+      modalOpen: false,
     };
   }
 
@@ -105,126 +119,141 @@ export class ListResourcesPanel extends React.Component<Props, State> {
   render() {
     // TODO: Make styles separate
     return (
-      <>
-        <Box height={1} width={1} bgcolor={'white'} borderRadius={0}>
-          <Toolbar variant="dense" style={{ ...styles.toolbar }}>
-            <ResourceSelect>
-              <SelectInput
-                value={this.state.resourceType}
-                options={[
-                  { text: 'Models', value: ResourceType.Model },
-                  { text: 'Datasets', value: ResourceType.Dataset },
-                ]}
-                onChange={event => {
-                  if (this.state.isLoading) return;
-                  this.selectType(event.target.value as ResourceType);
-                }}
-              />
-            </ResourceSelect>
-            <Box flexGrow={1}></Box>
-            <IconButton
-              disabled={this.state.isLoading}
-              style={styles.icon}
-              size="small"
-            >
-              <Icon>add</Icon>
-            </IconButton>
-            <IconButton
-              disabled={this.state.isLoading}
-              size="small"
-              onClick={_ => {
-                this.refresh();
-              }}
-            >
-              <Icon>refresh</Icon>
-            </IconButton>
-          </Toolbar>
-          <Toolbar variant="dense" style={styles.toolbar}>
-            <FullWidthInput width={1}>
-              <TextInput
-                placeholder="Search"
-                type="search"
-                onChange={event => {
-                  this.handleSearch(event.target.value);
-                }}
-              />
-            </FullWidthInput>
-          </Toolbar>
-          {this.state.resourceType === ResourceType.Dataset ? (
-            <ListResourcesTable
-              columns={[
-                {
-                  field: 'datasetType',
-                  title: '',
-                  render: rowData =>
-                    this.iconForDatasetType(rowData.datasetType),
-                  fixedWidth: 30,
-                  sorting: false,
-                },
-                {
-                  field: 'displayName',
-                  title: 'Name',
-                },
-                {
-                  title: 'Rows',
-                  field: 'exampleCount',
-                  type: ColumnType.Numeric,
-                  minShowWidth: breakpoints[1],
-                  fixedWidth: 80,
-                },
-                {
-                  title: 'Created at',
-                  field: 'createTime',
-                  type: ColumnType.DateTime,
-                  rightAlign: true,
-                  minShowWidth: breakpoints[0],
-                },
+      <Box height={1} width={1} bgcolor={'white'} borderRadius={0}>
+        <Toolbar variant="dense" style={{ ...styles.toolbar }}>
+          <ResourceSelect>
+            <SelectInput
+              value={this.state.resourceType}
+              options={[
+                { text: 'Models', value: ResourceType.Model },
+                { text: 'Datasets', value: ResourceType.Dataset },
               ]}
-              data={this.filterResources<Dataset>(this.state.datasets)}
-              onRowClick={rowData => {
-                this.props.context.manager.launchWidgetForId(
-                  rowData.id,
-                  rowData
-                );
+              onChange={event => {
+                if (this.state.isLoading) return;
+                this.selectType(event.target.value as ResourceType);
               }}
-              isLoading={this.state.isLoading}
-              height={this.props.height - 80}
-              width={this.props.width}
             />
-          ) : (
-            <ListResourcesTable
-              columns={[
-                {
-                  field: 'displayName',
-                  title: 'Name',
-                },
-                {
-                  title: 'Dataset',
-                  field: 'datasetId',
-                  minShowWidth: breakpoints[1],
-                },
-                {
-                  title: 'Last updated',
-                  field: 'updateTime',
-                  type: ColumnType.DateTime,
-                  rightAlign: true,
-                  minShowWidth: breakpoints[0],
-                },
-              ]}
-              data={this.filterResources<Model>(this.state.models)}
-              onRowClick={rowData => {
-                this.props.context.manager.launchWidgetForId(
-                  rowData.id,
-                  rowData
-                );
+          </ResourceSelect>
+          <Box flexGrow={1}></Box>
+          <IconButton
+            disabled={this.state.isLoading}
+            style={styles.icon}
+            size="small"
+            onClick={_ => {
+              this.setState({ modalOpen: true });
+            }}
+          >
+            <Icon>add</Icon>
+          </IconButton>
+          <IconButton
+            disabled={this.state.isLoading}
+            size="small"
+            onClick={_ => {
+              this.refresh();
+            }}
+          >
+            <Icon>refresh</Icon>
+          </IconButton>
+        </Toolbar>
+        <Toolbar variant="dense" style={styles.toolbar}>
+          <FullWidthInput width={1}>
+            <TextInput
+              placeholder="Search"
+              type="search"
+              onChange={event => {
+                this.handleSearch(event.target.value);
               }}
-              isLoading={this.state.isLoading}
-              height={this.props.height - 88}
-              width={this.props.width}
             />
-          )}
-        </Box>
-      </>
+          </FullWidthInput>
+        </Toolbar>
+        {this.state.resourceType === ResourceType.Dataset ? (
+          <ListResourcesTable
+            columns={[
+              {
+                field: 'datasetType',
+                title: '',
+                render: rowData => this.iconForDatasetType(rowData.datasetType),
+                fixedWidth: 30,
+                sorting: false,
+              },
+              {
+                field: 'displayName',
+                title: 'Name',
+              },
+              {
+                title: 'Rows',
+                field: 'exampleCount',
+                type: ColumnType.Numeric,
+                minShowWidth: breakpoints[1],
+                fixedWidth: 80,
+              },
+              {
+                title: 'Created at',
+                field: 'createTime',
+                type: ColumnType.DateTime,
+                rightAlign: true,
+                minShowWidth: breakpoints[0],
+              },
+            ]}
+            data={this.filterResources<Dataset>(this.state.datasets)}
+            onRowClick={rowData => {
+              this.props.context.manager.launchWidgetForId(rowData.id, rowData);
+            }}
+            isLoading={this.state.isLoading}
+            height={this.props.height - 80}
+            width={this.props.width}
+          />
+        ) : (
+          <ListResourcesTable
+            columns={[
+              {
+                field: 'displayName',
+                title: 'Name',
+              },
+              {
+                title: 'Dataset',
+                field: 'datasetId',
+                minShowWidth: breakpoints[1],
+              },
+              {
+                title: 'Last updated',
+                field: 'updateTime',
+                type: ColumnType.DateTime,
+                rightAlign: true,
+                minShowWidth: breakpoints[0],
+              },
+            ]}
+            data={this.filterResources<Model>(this.state.models)}
+            onRowClick={rowData => {
+              this.props.context.manager.launchWidgetForId(rowData.id, rowData);
+            }}
+            isLoading={this.state.isLoading}
+            height={this.props.height - 88}
+            width={this.props.width}
+          />
+        )}
+        <Modal
+          open={this.state.modalOpen}
+          onClose={(event: object, reason: string) => {
+            this.setState({ modalOpen: false });
+          }}
+        >
+          {
+            <p
+              style={{
+                width: 200,
+                position: 'absolute',
+                backgroundColor: 'white',
+                border: '2px solid #000',
+                top: '50%',
+                left: '50%',
+              }}
+            >
+              Select dataset type:
+            </p>
+          }
+        </Modal>
+      </Box>
     );
   }
 
