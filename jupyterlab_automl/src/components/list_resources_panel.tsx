@@ -9,6 +9,7 @@ import { ColumnType, ListResourcesTable } from './shared/list_resources_table';
 import { TextInput, SelectInput } from 'gcp-jupyterlab-shared';
 import styled from 'styled-components';
 import { debounce } from '../util';
+import { DatasetWidget } from './dataset_widget';
 
 interface Props {
   isVisible: boolean;
@@ -183,6 +184,7 @@ export class ListResourcesPanel extends React.Component<Props, State> {
               data={this.filterResources<Dataset>(this.state.datasets)}
               onRowClick={rowData => {
                 this.props.context.manager.launchWidgetForId(
+                  DatasetWidget,
                   rowData.id,
                   rowData
                 );
@@ -190,6 +192,15 @@ export class ListResourcesPanel extends React.Component<Props, State> {
               isLoading={this.state.isLoading}
               height={this.props.height - 80}
               width={this.props.width}
+              rowContextMenu={[
+                {
+                  label: 'Delete',
+                  handler: rowData => {
+                    // TODO: Implement deletion
+                    console.log('DELETED! ', rowData.displayName);
+                  },
+                },
+              ]}
             />
           ) : (
             <ListResourcesTable
@@ -213,10 +224,11 @@ export class ListResourcesPanel extends React.Component<Props, State> {
               ]}
               data={this.filterResources<Model>(this.state.models)}
               onRowClick={rowData => {
-                this.props.context.manager.launchWidgetForId(
+                /*this.props.context.manager.launchWidgetForId(
+                  ReactWidget,
                   rowData.id,
                   rowData
-                );
+                );*/
               }}
               isLoading={this.state.isLoading}
               height={this.props.height - 88}

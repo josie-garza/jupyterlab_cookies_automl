@@ -7,11 +7,10 @@ import {
 } from '@jupyterlab/application';
 
 import { AutoMLWidget } from './components/automl_widget';
-import { DatasetWidget } from './components/dataset_widget';
 import { WidgetManager } from './widget_manager';
 
 async function activate(app: JupyterFrontEnd) {
-  const manager = new WidgetManager(DatasetWidget, app);
+  const manager = new WidgetManager(app);
   const context = { app: app, manager: manager };
   const listWidget = new AutoMLWidget(context);
   listWidget.addClass('jp-AutoMLIcon');

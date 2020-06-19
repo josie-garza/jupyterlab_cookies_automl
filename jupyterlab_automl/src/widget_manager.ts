@@ -7,17 +7,18 @@ import { JupyterFrontEnd } from '@jupyterlab/application';
 export class WidgetManager {
   private widgets: { [id: string]: MainAreaWidget } = {};
 
-  constructor(
-    private widgetType: new (...args: any[]) => ReactWidget,
-    private app: JupyterFrontEnd
-  ) {}
+  constructor(private app: JupyterFrontEnd) {}
 
-  launchWidgetForId(id: string, ...args: any[]) {
+  launchWidgetForId(
+    widgetType: new (...args: any[]) => ReactWidget,
+    id: string,
+    ...args: any[]
+  ) {
     // Get the widget associated with a dataset/resource id, or create one
     // if it doesn't exist yet and activate it
     let widget = this.widgets[id];
     if (!widget || widget.isDisposed) {
-      const content = new this.widgetType(...args);
+      const content = new widgetType(...args);
       widget = new MainAreaWidget({ content });
       widget.disposed.connect(() => {
         if (this.widgets[id] === widget) {
