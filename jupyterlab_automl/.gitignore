@@ -16,11 +16,9 @@ lib-cov
 
 # Coverage directory used by tools like istanbul
 coverage
-htmlcov
 
 # nyc test coverage
 .nyc_output
-.coverage
 
 # Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
@@ -73,7 +71,6 @@ venv/
 
 # Plugin binary
 lib/
-*.pyc
 
 # Python package stuff
 build/
@@ -83,5 +80,4 @@ __pycache__
 .ipynb_checkpoints/
 *.ipynb
 
-# TypeScript Build Info
-*.tsbuildinfo
+.DS_store

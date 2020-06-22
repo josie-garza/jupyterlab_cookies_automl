@@ -1,61 +1,61 @@
-# Notebook AutoML Extension
+# Google Cloud Platform Extensions for Jupyter and JupyterLab
 
-JupyterLab extension project
-
-## Prerequisites
-
-* Python 3.5+
-* [JupyterLab](https://jupyterlab.readthedocs.io/en/stable/getting_started/installation.html)
-* [Virtualenv](https://virtualenv.pypa.io/en/latest/) (Recommended for local development)
-* [NPM](https://nodejs.org/en/) (For local development)
-
-## GCP Installation
-
-This should work on Google Cloud Deep Learning VM M19+.
-
-### Install Google Cloud Deep Learning VM from local
-
-Use the [deploy.sh](./deploy.sh) script to build the extension locally, upload, and
-install on a DLVM over SSH using the instance name. Requires gcloud from the Google Cloud SDK to be [installed](https://cloud.google.com/sdk/install).
-
-```bash
-./deploy.sh ${INSTANCE_NAME?}
-```
-### Manually install from local
-
-```bash
-# Build the Python source distribution package
-local$ python setup.py sdist
-
-# Copy the dist/jupyterlab_automl-x.x.x.tar.gz archive to the JupyterLab
-# server
-
-# Install the Python package
-server$ sudo pip3 install jupyterlab_automl-x.x.x.tar.gz
-# Force Jupyter to rebuild the front-end packages
-server$ sudo jupyter lab build
-server$ sudo service jupyter restart
-```
+This repository serves as a common repository for Google-developed extensions
+for the Jupyter and JupyterLab environments.
 
 ## Development
 
-For a development install (requires npm version 4 or later), do the following in the repository directory:
+The following steps only need to be completed once to setup your initial
+development environment.
 
-You will need to have Python3, virtualenv, and npm installed.
+1. Clone this repository.
 
-```bash
-# Create a Python 3 virtualenv and install jupyterlab and the project in edit mode
-virtualenv -p python3 venv
-source venv/bin/activate
-# Install the version of jupyterlab used by DLVM images
-pip install jupyterlab==1.2.6
-pip install .
+   - `git clone git@github.com:GoogleCloudPlatform/jupyter-extensions.git`
 
-# Install the npm package and the extension
-npm install
-jupyter labextension install .
+1. `cd` into the repository directory and install the NPM dependencies
+   with `npm install`.
 
-# Now, run npm start which starts the Typescript compiler in watch mode on the
-# extension directory as well as the JupyterLab server
-npm start
-```
+1. Run `npm run bootstrap` to install the dependencies for each of the extension
+   subfolders.
+
+   - You should repeat this command anytime you add a new NPM dependency to one
+     of the subfolder packages.
+
+1. Run `pipenv install`.
+
+   - Install [pipenv](https://github.com/pypa/pipenv#installation) if you don't
+     have it already to assist with managing a clean Python environment.
+
+1. Run `pipenv shell` to activate the virtual Python environment with the
+   necessary dependencies installed.
+
+1. Run `npm run link` to link the [gcp-jupyterlab-shared](./shared/client)
+   package into the JupyterLab environment.
+
+   - This allows local development on the common frontend components library
+     to be used in other extensions without needing to publish and re-install
+     updated versions of the packages.
+
+1. `cd` into the folder of the extension you plan to develop and run
+   `npm run install-extension`. This installs the extension in the
+   JupyterLab environment in development mode. Afterwards, `cd` back to the root
+   of the repository.
+
+1. Run `npm run watch` to start the TypeScript compiler in watch mode. This will
+   watch for changes in any of the TypeScript sources.
+
+   - Alternatively, you can run the `npm run watch` command only in the packages
+     you are working in.
+
+1. In a seperate terminal, run `pipenv shell` and then `npm run devserver`.
+   This will start JupyterLab in watch mode to pick up any changes to either the
+   TypeScript or Python code.
+
+   - You can watch the terminal output to ensure that the TS compiler has
+     successfully recompiled your package. Then, you can refresh the browser
+     tab to see your change.
+   - If your change isn't present after a refresh cycle, you may need to stop
+     and restart the `watch` or `devserver` tasks. This may occur when adding
+     a new file to the project.
+
+You can then open JupyterLab at one of the links shown in the logging output.
