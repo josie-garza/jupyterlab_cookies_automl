@@ -15,24 +15,6 @@ async function activate(app: JupyterFrontEnd) {
   const listWidget = new AutoMLWidget(context);
   listWidget.addClass('jp-AutoMLIcon');
   app.shell.add(listWidget, 'left', { rank: 100 });
-
-  const commandID = 'my-command';
-  let toggled = false;
-
-  app.commands.addCommand(commandID, {
-    label: 'My Cool Command',
-    isToggled: () => toggled,
-    iconClass: 'some-css-icon-class',
-    execute: () => {
-      console.log(`Executed ${commandID}`);
-      toggled = !toggled;
-    },
-  });
-
-  app.contextMenu.addItem({
-    command: commandID,
-    selector: '.jp-ResourceTableRow',
-  });
 }
 
 /**

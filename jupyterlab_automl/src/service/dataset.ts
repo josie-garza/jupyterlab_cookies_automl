@@ -54,7 +54,6 @@ export abstract class DatasetService {
     for (let i = 0; i < data.length; ++i) {
       data[i].createTime = new Date(data[i].createTime);
     }
-    console.log(data);
     return data;
   }
 
@@ -66,9 +65,7 @@ export abstract class DatasetService {
       body: JSON.stringify(body),
       method: 'POST',
     };
-    console.log('deleteing dataset');
     await requestAPI('v1/deleteDataset', requestInit);
-    console.log('deleted..');
   }
 
   static async listTableSpecs(datasetId: string): Promise<TableSpec[]> {
