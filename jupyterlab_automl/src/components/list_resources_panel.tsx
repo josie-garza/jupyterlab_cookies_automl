@@ -185,8 +185,8 @@ export class ListResourcesPanel extends React.Component<Props, State> {
               onRowClick={rowData => {
                 if (rowData.datasetType === 'TBL') {
                   this.props.context.manager.launchWidgetForId(
-                    rowData.id,
                     DatasetWidget,
+                    rowData.id,
                     rowData
                   );
                 }
@@ -194,6 +194,15 @@ export class ListResourcesPanel extends React.Component<Props, State> {
               isLoading={this.state.isLoading}
               height={this.props.height - 80}
               width={this.props.width}
+              rowContextMenu={[
+                {
+                  label: 'Delete',
+                  handler: rowData => {
+                    // TODO: Implement deletion
+                    console.log('DELETED! ', rowData.displayName);
+                  },
+                },
+              ]}
             />
           ) : (
             <ListResourcesTable

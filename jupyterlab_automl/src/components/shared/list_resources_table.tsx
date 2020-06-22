@@ -15,8 +15,9 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-import MaterialTable, { Icons } from 'material-table';
+import MaterialTable, { Icons, MTableBodyRow } from 'material-table';
 import React, { forwardRef } from 'react';
+import { ContextMenu } from './context_menu';
 
 const tableIcons: Icons = {
   Add: forwardRef((props: any, ref: any) => <AddBox {...props} ref={ref} />),
@@ -85,6 +86,11 @@ export interface ResourceColumn {
   filtering?: boolean;
 }
 
+interface ContextMenuItem {
+  label: string;
+  handler: (data) => void;
+}
+
 interface Props {
   width: number;
   height: number;
@@ -92,6 +98,7 @@ interface Props {
   columns: ResourceColumn[];
   isLoading?: boolean;
   onRowClick?: (rowData: any) => void;
+  rowContextMenu?: ContextMenuItem[];
 }
 
 export const style: CSSProperties = {
@@ -166,6 +173,21 @@ export class ListResourcesTable extends React.PureComponent<Props> {
           if (this.props.onRowClick) {
             this.props.onRowClick(rowData);
           }
+        }}
+        components={{
+          Row:
+            this.props.rowContextMenu !== undefined
+              ? props => (
+                  <ContextMenu
+                    items={this.props.rowContextMenu.map(item => ({
+                      label: item.label,
+                      onClick: () => item.handler(props.data),
+                    }))}
+                  >
+                    <MTableBodyRow {...props}></MTableBodyRow>
+                  </ContextMenu>
+                )
+              : undefined,
         }}
       />
     );

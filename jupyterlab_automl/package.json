@@ -53,9 +53,10 @@
     "csstips": "^1.2.0",
     "gcp-jupyterlab-shared": "^1.0.0",
     "material-table": "^1.61.0",
+    "react-portal": "^4.2.1",
+    "recharts": "^1.8.5",
     "styled-components": "^5.1.1",
-    "typestyle": "^2.1.0",
-    "recharts": "^1.8.5"
+    "typestyle": "^2.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.8.7",

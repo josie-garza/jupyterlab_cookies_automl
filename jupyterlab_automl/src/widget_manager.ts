@@ -10,8 +10,8 @@ export class WidgetManager {
   constructor(private app: JupyterFrontEnd) {}
 
   launchWidgetForId(
-    id: string,
     widgetType: new (...args: any[]) => ReactWidget,
+    id: string,
     ...args: any[]
   ) {
     // Get the widget associated with a dataset/resource id, or create one
