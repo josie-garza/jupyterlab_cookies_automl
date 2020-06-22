@@ -1,6 +1,12 @@
 from notebook.utils import url_path_join
 
-from jupyterlab_automl.handlers import ListDatasets, ListModels, ListTableInfo, DeleteDataset, DeleteModel
+from jupyterlab_automl.handlers import (
+    DeleteDataset,
+    DeleteModel,
+    ListDatasets,
+    ListModels,
+    ListTableInfo,
+)
 from jupyterlab_automl.version import VERSION
 
 __version__ = VERSION

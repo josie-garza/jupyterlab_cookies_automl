@@ -18,7 +18,8 @@ from jupyterlab_automl.version import VERSION
 
 SCOPE = ("https://www.googleapis.com/auth/cloud-platform",)
 
-class ColumnType(Enum): 
+
+class ColumnType(Enum):
     Unspecified = 0
     Numeric = 3
     Timestamp = 4
@@ -28,11 +29,13 @@ class ColumnType(Enum):
     Categorical = 10
     Unrecognized = -1
 
-class DatasetType(Enum): 
+
+class DatasetType(Enum):
     other = "other"
     TBL = "TBL"
     ICN = "ICN"
     IOD = "IOD"
+
 
 class Months(Enum):
     Jan = 1
@@ -48,6 +51,7 @@ class Months(Enum):
     Nov = 11
     Dec = 12
 
+
 class Days(Enum):
     Mon = 1
     Tue = 2
@@ -57,9 +61,11 @@ class Days(Enum):
     Sat = 6
     Sun = 7
 
+
 class ChartInfo(Enum):
     name = "name"
     amount = "Number of Instances"
+
 
 class AuthProvider:
     """Provides default GCP authentication credential."""
@@ -116,32 +122,67 @@ def get_detail_panel(column_spec, count):
     chart_data = []
     if column_spec.data_type.type_code == 3:
         mean = round(column_spec.data_stats.float64_stats.mean, 2)
-        standard_deviation = round(column_spec.data_stats.float64_stats.standard_deviation, 2)
+        standard_deviation = round(
+            column_spec.data_stats.float64_stats.standard_deviation, 2
+        )
         for bucket in column_spec.data_stats.float64_stats.histogram_buckets:
             chart_data.append(
-                {ChartInfo.name.value: get_bucket_label(bucket), ChartInfo.amount.value: bucket.count}
+                {
+                    ChartInfo.name.value: get_bucket_label(bucket),
+                    ChartInfo.amount.value: bucket.count,
+                }
             )
         return [chart_data, mean, standard_deviation]
     elif column_spec.data_type.type_code == 10:
         try:
-            div = column_spec.data_stats.category_stats.top_category_stats[0].count / count
+            div = (
+                column_spec.data_stats.category_stats.top_category_stats[0].count
+                / count
+            )
             rounded = round(div * 100, 3)
-            most_common = column_spec.data_stats.category_stats.top_category_stats[0].value + " (" + str(rounded) + "%)"
+            most_common = (
+                column_spec.data_stats.category_stats.top_category_stats[0].value
+                + " ("
+                + str(rounded)
+                + "%)"
+            )
         except:
             most_common = ""
         for stat in column_spec.data_stats.category_stats.top_category_stats:
-            chart_data.append({ChartInfo.name.value: stat.value, ChartInfo.amount.value: stat.count})
-        return[chart_data, most_common]
+            chart_data.append(
+                {ChartInfo.name.value: stat.value, ChartInfo.amount.value: stat.count}
+            )
+        return [chart_data, most_common]
     elif column_spec.data_type.type_code == 4:
         month_chart = []
         day_chart = []
         time_chart = []
-        for month, amount in dict(column_spec.data_stats.timestamp_stats.granular_stats['month_of_year'].buckets).items():
-            month_chart.append({ChartInfo.name.value: Months(month).name, ChartInfo.amount.value: amount})
-        for day, amount in dict(column_spec.data_stats.timestamp_stats.granular_stats['day_of_week'].buckets).items():
-            day_chart.append({ChartInfo.name.value: Days(day).name, ChartInfo.amount.value: amount})
-        for hour, amount in dict(column_spec.data_stats.timestamp_stats.granular_stats['hour_of_day'].buckets).items():
-            time_chart.append({ChartInfo.name.value: str(hour) + ":00", ChartInfo.amount.value: amount})
+        for month, amount in dict(
+            column_spec.data_stats.timestamp_stats.granular_stats[
+                "month_of_year"
+            ].buckets
+        ).items():
+            month_chart.append(
+                {
+                    ChartInfo.name.value: Months(month).name,
+                    ChartInfo.amount.value: amount,
+                }
+            )
+        for day, amount in dict(
+            column_spec.data_stats.timestamp_stats.granular_stats["day_of_week"].buckets
+        ).items():
+            day_chart.append(
+                {ChartInfo.name.value: Days(day).name, ChartInfo.amount.value: amount}
+            )
+        for hour, amount in dict(
+            column_spec.data_stats.timestamp_stats.granular_stats["hour_of_day"].buckets
+        ).items():
+            time_chart.append(
+                {
+                    ChartInfo.name.value: str(hour) + ":00",
+                    ChartInfo.amount.value: amount,
+                }
+            )
         return [month_chart, day_chart, time_chart]
     else:
         return []
@@ -155,7 +196,9 @@ def get_column_specs(client, table_spec):
             type_code = ColumnType(column_spec.data_type.type_code).name
         except:
             type_code = ColumnType.unrecognized.name
-        detail_panel = get_detail_panel(column_spec, table_spec.row_count - column_spec.data_stats.null_value_count)
+        detail_panel = get_detail_panel(
+            column_spec, table_spec.row_count - column_spec.data_stats.null_value_count
+        )
         type_summary[type_code] += 1
         column_specs.append(
             {
@@ -328,6 +371,7 @@ class ListTableInfo(APIHandler):
             app_log.exception(str(e))
             self.set_status(500, str(e))
             self.finish({"error": {"message": str(e)}})
+
 
 class DeleteDataset(APIHandler):
     """ Handles deleteing a dataset in GCP."""
