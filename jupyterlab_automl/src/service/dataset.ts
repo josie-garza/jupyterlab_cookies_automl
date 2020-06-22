@@ -54,8 +54,18 @@ export abstract class DatasetService {
     for (let i = 0; i < data.length; ++i) {
       data[i].createTime = new Date(data[i].createTime);
     }
-    console.log(data);
     return data;
+  }
+
+  static async deleteDataset(datasetId: string): Promise<void> {
+    const body = {
+      datasetId: datasetId,
+    };
+    const requestInit: RequestInit = {
+      body: JSON.stringify(body),
+      method: 'POST',
+    };
+    await requestAPI('v1/deleteDataset', requestInit);
   }
 
   static async listTableSpecs(datasetId: string): Promise<TableSpec[]> {

@@ -11,3 +11,7 @@ jupyterlab = "==1.2.15" # https://github.com/jupyterlab/jupyterlab/issues/8515
 
 [dev-packages]
 pylint = "*"
+black = "*"
+
+[pipenv]
+allow_prereleases = true

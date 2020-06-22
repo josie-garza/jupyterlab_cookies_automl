@@ -198,8 +198,9 @@ export class ListResourcesPanel extends React.Component<Props, State> {
                 {
                   label: 'Delete',
                   handler: rowData => {
-                    // TODO: Implement deletion
-                    console.log('DELETED! ', rowData.displayName);
+                    // TODO: Show a confirmation dialog before deleting
+                    DatasetService.deleteDataset(rowData.id);
+                    this.refresh();
                   },
                 },
               ]}
