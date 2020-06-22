@@ -183,11 +183,13 @@ export class ListResourcesPanel extends React.Component<Props, State> {
               ]}
               data={this.filterResources<Dataset>(this.state.datasets)}
               onRowClick={rowData => {
-                this.props.context.manager.launchWidgetForId(
-                  DatasetWidget,
-                  rowData.id,
-                  rowData
-                );
+                if (rowData.datasetType === 'TBL') {
+                  this.props.context.manager.launchWidgetForId(
+                    DatasetWidget,
+                    rowData.id,
+                    rowData
+                  );
+                }
               }}
               isLoading={this.state.isLoading}
               height={this.props.height - 80}
@@ -223,13 +225,6 @@ export class ListResourcesPanel extends React.Component<Props, State> {
                 },
               ]}
               data={this.filterResources<Model>(this.state.models)}
-              onRowClick={rowData => {
-                /*this.props.context.manager.launchWidgetForId(
-                  ReactWidget,
-                  rowData.id,
-                  rowData
-                );*/
-              }}
               isLoading={this.state.isLoading}
               height={this.props.height - 88}
               width={this.props.width}
@@ -246,12 +241,15 @@ export class ListResourcesPanel extends React.Component<Props, State> {
         icon: 'error',
         color: blue[900],
       },
-      tables: {
+      TBL: {
         icon: 'table_chart',
         color: blue[700],
       },
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      image_classification: {
+      ICN: {
+        icon: 'image',
+        color: orange[500],
+      },
+      IOD: {
         icon: 'image',
         color: orange[500],
       },

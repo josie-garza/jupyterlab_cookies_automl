@@ -70,6 +70,7 @@ export enum ColumnType {
   Date = 'date',
   DateTime = 'datetime',
   Currency = 'currency',
+  String = 'string',
 }
 
 export interface ResourceColumn {

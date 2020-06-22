@@ -9,7 +9,7 @@ export type ColumnType =
   | 'Struct'
   | 'Unspecified'
   | 'Unrecognized';
-export type DatasetType = 'tables' | 'image_classification' | 'other';
+export type DatasetType = 'TBL' | 'ICN' | 'IOD' | 'other';
 export interface Dataset {
   id: string; // Resource name of dataset
   displayName: string;
@@ -28,7 +28,7 @@ export interface ColumnSpec {
   invalidValueCount: number;
   nullValueCount: string;
   nullable: boolean;
-  chartInfo: any;
+  detailPanel: any;
 }
 
 export interface TableSpec {
