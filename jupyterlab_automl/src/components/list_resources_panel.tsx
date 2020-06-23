@@ -1,5 +1,4 @@
 import {
-  Modal,
   Box,
   Icon,
   IconButton,
@@ -11,6 +10,7 @@ import orange from '@material-ui/core/colors/orange';
 import * as React from 'react';
 import { Dataset, DatasetService, DatasetType } from '../service/dataset';
 import { Model, ModelService } from '../service/model';
+import { ImportData } from './import_data'
 import { Context } from './automl_widget';
 import { ColumnType, ListResourcesTable } from './shared/list_resources_table';
 import { TextInput, SelectInput } from 'gcp-jupyterlab-shared';
@@ -204,55 +204,37 @@ export class ListResourcesPanel extends React.Component<Props, State> {
             width={this.props.width}
           />
         ) : (
-          <ListResourcesTable
-            columns={[
-              {
-                field: 'displayName',
-                title: 'Name',
-              },
-              {
-                title: 'Dataset',
-                field: 'datasetId',
-                minShowWidth: breakpoints[1],
-              },
-              {
-                title: 'Last updated',
-                field: 'updateTime',
-                type: ColumnType.DateTime,
-                rightAlign: true,
-                minShowWidth: breakpoints[0],
-              },
-            ]}
-            data={this.filterResources<Model>(this.state.models)}
-            onRowClick={rowData => {
-              this.props.context.manager.launchWidgetForId(rowData.id, rowData);
-            }}
-            isLoading={this.state.isLoading}
-            height={this.props.height - 88}
-            width={this.props.width}
-          />
-        )}
-        <Modal
-          open={this.state.modalOpen}
-          onClose={(event: object, reason: string) => {
-            this.setState({ modalOpen: false });
-          }}
-        >
-          {
-            <p
-              style={{
-                width: 200,
-                position: 'absolute',
-                backgroundColor: 'white',
-                border: '2px solid #000',
-                top: '50%',
-                left: '50%',
+            <ListResourcesTable
+              columns={[
+                {
+                  field: 'displayName',
+                  title: 'Name',
+                },
+                {
+                  title: 'Dataset',
+                  field: 'datasetId',
+                  minShowWidth: breakpoints[1],
+                },
+                {
+                  title: 'Last updated',
+                  field: 'updateTime',
+                  type: ColumnType.DateTime,
+                  rightAlign: true,
+                  minShowWidth: breakpoints[0],
+                },
+              ]}
+              data={this.filterResources<Model>(this.state.models)}
+              onRowClick={rowData => {
+                this.props.context.manager.launchWidgetForId(rowData.id, rowData);
               }}
-            >
-              Select dataset type:
-            </p>
-          }
-        </Modal>
+              isLoading={this.state.isLoading}
+              height={this.props.height - 88}
+              width={this.props.width}
+            />
+          )}
+        {this.state.modalOpen ? <ImportData onClose={_ => {
+              this.setState({ modalOpen: false });
+            }}/> : null}
       </Box>
     );
   }
