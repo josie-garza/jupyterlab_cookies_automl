@@ -1,16 +1,34 @@
 import * as React from 'react';
-import { Dialog, FormControl, RadioGroup, FormControlLabel, Radio, Button } from '@material-ui/core';
+import { Dialog, Button } from '@material-ui/core';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import * as csstips from 'csstips';
 import {
   BASE_FONT,
   COLORS,
   SubmitButton,
-  css,
   TextInput,
   SelectInput,
+  Option,
 } from 'gcp-jupyterlab-shared';
+import { RadioInput } from './shared/radio_input'
+import { ActionBar } from './shared/action_bar'
 import { stylesheet } from 'typestyle';
+
+
+type SourceType =
+  | 'computer'
+  | 'bigquery'
+  | 'gcs'
+  | 'dataframe';
+
+interface Props {
+  onClose: any;
+}
+
+interface State {
+  from: SourceType;
+  params: any
+}
 
 const theme = createMuiTheme({
   overrides: {
@@ -26,13 +44,10 @@ const theme = createMuiTheme({
       text: {
         padding: '1px 16px',
       },
-    },
-    MuiRadio: {
-      colorSecondary: {
-        '&$checked': {
-          color: COLORS.blue,
-        }
-      }
+      label: {
+        textTransform: 'capitalize',
+        color: COLORS.white,
+      },
     }
   },
 });
@@ -47,7 +62,10 @@ const localStyles = stylesheet({
     ...csstips.center,
   },
   title: {
-    ...csstips.flex,
+    ...BASE_FONT,
+    fontWeight: 500,
+    fontSize: '15px',
+    marginBottom: '16px',
   },
   main: {
     backgroundColor: COLORS.white,
@@ -60,65 +78,56 @@ const localStyles = stylesheet({
   input: {
     display: 'none',
   },
-  label: {
-    textTransform: 'capitalize',
-    color: COLORS.white,
-  },
 });
 
-interface Props {
-  onClose: any;
-}
-
-interface State {
-  from: string;
-  files: any
-}
+const SOURCES: Option[] = [
+  {
+    value: 'computer',
+    text: 'Upload files from your computer',
+  },
+  {
+    value: 'bigquery',
+    text: 'Import data from BigQuery',
+  },
+  {
+    value: 'gcs',
+    text: 'Import data from Google Cloud Storage',
+  },
+  {
+    value: 'dataframe',
+    text: 'Select dataframe from kernel',
+  }
+]
 
 export class ImportData extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
       from: 'computer',
-      files: null,
+      params: null,
     };
   }
 
   render() {
     return <Dialog open={true} onClose={this.props.onClose}>
       <header className={localStyles.header}>
-        <span className={localStyles.title}>Import Data</span>
+        Import Data
       </header>
       <main className={localStyles.main}>
-        <ThemeProvider theme={theme}>
-          <FormControl component="fieldset">
-            <RadioGroup aria-label="gender" name="gender1" value={this.state.from} onChange={(event) => {
-              this.setState({ from: event.target.value });
-            }}>
-              <FormControlLabel value="computer" control={<Radio />} label="Upload files from your computer" />
-              <FormControlLabel value="bigquery" control={<Radio />} label="Import data from BigQuery" />
-              <FormControlLabel value="gcs" control={<Radio />} label="Import data from GCS" />
-              <FormControlLabel value="dataframe" control={<Radio />} label="Select dataframe from kernel" />
-            </RadioGroup>
-          </FormControl>
-          <div>{this.getDialogContent()}</div>
-          <div>
-            <button
-              type="button"
-              className={css.button}
-              onClick={this.props.onClose}
-            >
-              {'Close'}
-            </button>
-            <SubmitButton
-              actionPending={false}
-              onClick={_ => {
-                console.log('submitting')
-              }}
-              text="Submit"
-            />
-          </div>
-        </ThemeProvider>
+        <RadioInput value={this.state.from} options={SOURCES} onChange={(event) => {
+          this.setState({ from: event.target.value as SourceType });
+        }} />
+        <div>{this.getDialogContent()}</div>
+        <ActionBar
+          onClick={this.props.onClose}
+          closeLabel="Cancel"
+        >
+          <SubmitButton
+            actionPending={false}
+            onClick={this.props.onClose}
+            text="Submit"
+          />
+        </ActionBar>
       </main>
     </Dialog >
   }
@@ -127,7 +136,7 @@ export class ImportData extends React.Component<Props, State> {
     const { from } = this.state;
     if (from === 'computer') {
       return (
-        <div>
+        <div style={{ margin: '16px 0 16px 0' }}>
           <p className={localStyles.title}>Upload files from your computer</p>
           <input
             className={localStyles.input}
@@ -135,32 +144,39 @@ export class ImportData extends React.Component<Props, State> {
             multiple
             type="file"
             onChange={(event) => {
-              this.setState({ files: event.target.files })
+              this.setState({ params: event.target.files })
             }}
           />
           <label htmlFor="button-file">
-            <Button component="span" classes={{ label: localStyles.label }}>
-              Select Files
-            </Button>
+            <ThemeProvider theme={theme}>
+              <Button component="span">
+                Select
+              </Button>
+            </ThemeProvider>
           </label>
         </div>
       );
     } else if (from === 'bigquery') {
       return (
-        <div>
+        <div style={{ margin: '16px 0 16px 0' }}>
           <p className={localStyles.title}>Import data from BigQuery</p>
-          <TextInput label='BigQuery Project ID' />
+          <TextInput label='BigQuery URI' onChange={(event) => {
+              this.setState({ params: event.target.value })
+            }}/>
         </div>
       );
     } else if (from === 'gcs') {
       return (
-        <div>
-          <p>Import data from GCS</p>
+        <div style={{ margin: '16px 0 16px 0' }}>
+          <p className={localStyles.title}>Import data from Google Cloud Storage</p>
+          <TextInput label='Google Cloud Storage URI' onChange={(event) => {
+              this.setState({ params: event.target.value })
+            }}/>
         </div>
       );
     } else if (from === 'dataframe') {
       return (
-        <div>
+        <div style={{ margin: '16px 0 16px 0' }}>
           <p className={localStyles.title}>Select dataframe from kernel</p>
           <SelectInput />
         </div>
